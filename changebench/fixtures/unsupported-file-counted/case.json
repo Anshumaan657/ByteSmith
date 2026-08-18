@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "unsupported-file-counted",
+  "title": "Unsupported changed files remain in the full-diff denominator",
+  "description": "A TypeScript file and an unsupported workflow file both change; the unsupported file must remain visible.",
+  "tags": ["coverage", "unsupported", "full-diff-denominator"],
+  "snapshots": {
+    "before": "before",
+    "after": "after"
+  },
+  "capabilities": ["typescript.exports"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": {
+      "totalChangedFiles": 2,
+      "analyzed": 1,
+      "partiallyAnalyzed": 0,
+      "unsupported": 1,
+      "intentionallyExcluded": 0
+    },
+    "requiredChanges": [
+      {
+        "kind": "symbol",
+        "componentName": "calculateTotal"
+      }
+    ],
+    "forbiddenChanges": [],
+    "requiredImpacts": [],
+    "forbiddenImpacts": [],
+    "requiredTests": [],
+    "forbiddenTests": [],
+    "requiredUnknowns": [
+      {
+        "type": "unsupported_file",
+        "path": "workflows/payment.flow",
+        "blockingRelevance": "possible"
+      }
+    ],
+    "forbiddenUnknowns": [],
+    "requiredPolicies": [],
+    "forbiddenPolicies": [],
+    "requiredWaivers": [],
+    "allowUnexpected": false
+  }
+}

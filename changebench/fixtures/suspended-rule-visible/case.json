@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "suspended-rule-visible",
+  "title": "A safely executed suspended rule remains visible",
+  "description": "The finding remains in the result as a warning and cannot block while repository suspension is active.",
+  "tags": ["suspension", "visibility", "result-state"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports", "policy.suspension"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": {
+      "totalChangedFiles": 1,
+      "analyzed": 1,
+      "partiallyAnalyzed": 0,
+      "unsupported": 0,
+      "intentionallyExcluded": 0
+    },
+    "requiredChanges": [
+      { "kind": "contract", "compatibility": "breaking", "componentName": "Invoice.total" }
+    ],
+    "forbiddenChanges": [],
+    "requiredImpacts": [
+      { "ruleId": "typescript.export-member-removed", "affectedComponentName": "renderInvoice" }
+    ],
+    "forbiddenImpacts": [],
+    "requiredTests": [],
+    "forbiddenTests": [],
+    "requiredUnknowns": [],
+    "forbiddenUnknowns": [],
+    "requiredPolicies": [
+      {
+        "ruleId": "typescript.export-member-removed",
+        "ruleState": "suspended",
+        "result": "warn",
+        "suspensionScope": "repository",
+        "findingId": "impact.invoice-render"
+      }
+    ],
+    "forbiddenPolicies": [
+      { "ruleId": "typescript.export-member-removed", "result": "fail" }
+    ],
+    "requiredWaivers": [],
+    "allowUnexpected": false
+  }
+}

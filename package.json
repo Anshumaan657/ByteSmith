@@ -1,0 +1,19 @@
+{
+  "name": "bytesmith",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.19.0",
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "validate:spec": "node scripts/validate-spec.mjs",
+    "test:phase0": "node --test scripts/test/*.test.mjs",
+    "phase0:check": "node scripts/validate-spec.mjs && node --test scripts/test/*.test.mjs"
+  },
+  "devDependencies": {
+    "ajv": "8.20.0",
+    "ajv-formats": "3.0.1"
+  }
+}

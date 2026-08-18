@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "waiver-expiry-reactivates",
+  "title": "Expired waiver reactivates a still-applicable finding",
+  "description": "The original finding remains immutable and participates in blocking evaluation after its temporary waiver expires.",
+  "tags": ["waiver", "expiry", "reactivation"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports", "policy.waiver"],
+  "expected": {
+    "conclusion": "fail",
+    "coverage": {
+      "totalChangedFiles": 1,
+      "analyzed": 1,
+      "partiallyAnalyzed": 0,
+      "unsupported": 0,
+      "intentionallyExcluded": 0
+    },
+    "requiredChanges": [
+      { "kind": "contract", "compatibility": "breaking", "componentName": "User.email" }
+    ],
+    "forbiddenChanges": [],
+    "requiredImpacts": [
+      { "ruleId": "typescript.export-member-removed", "affectedComponentName": "sendReceipt" }
+    ],
+    "forbiddenImpacts": [],
+    "requiredTests": [],
+    "forbiddenTests": [],
+    "requiredUnknowns": [],
+    "forbiddenUnknowns": [],
+    "requiredPolicies": [
+      {
+        "ruleId": "typescript.export-member-removed",
+        "ruleState": "active",
+        "result": "fail",
+        "findingId": "impact.send-receipt"
+      }
+    ],
+    "forbiddenPolicies": [],
+    "requiredWaivers": [
+      { "findingId": "impact.send-receipt", "scope": "pull_request", "status": "expired" }
+    ],
+    "allowUnexpected": false
+  }
+}

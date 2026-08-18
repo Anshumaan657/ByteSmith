@@ -1,0 +1,174 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bytesmith.dev/schemas/changebench-case.schema.json",
+  "title": "ByteSmith ChangeBench case",
+  "type": "object",
+  "required": ["schemaVersion", "id", "title", "snapshots", "capabilities", "expected"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string", "minLength": 1 },
+    "unexpectedRationale": { "type": "string", "minLength": 1 },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "snapshots": {
+      "type": "object",
+      "required": ["before", "after"],
+      "properties": {
+        "before": { "type": "string", "minLength": 1 },
+        "after": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "capabilities": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "expected": {
+      "type": "object",
+      "required": [
+        "conclusion",
+        "coverage",
+        "requiredChanges",
+        "forbiddenChanges",
+        "requiredImpacts",
+        "forbiddenImpacts",
+        "requiredTests",
+        "forbiddenTests",
+        "requiredUnknowns",
+        "forbiddenUnknowns",
+        "requiredPolicies",
+        "forbiddenPolicies",
+        "requiredWaivers",
+        "allowUnexpected"
+      ],
+      "properties": {
+        "conclusion": { "$ref": "impact-types.schema.json#/$defs/conclusion" },
+        "coverage": { "$ref": "#/$defs/coverageExpectation" },
+        "requiredChanges": { "type": "array", "items": { "$ref": "#/$defs/changeMatcher" } },
+        "forbiddenChanges": { "type": "array", "items": { "$ref": "#/$defs/changeMatcher" } },
+        "requiredImpacts": { "type": "array", "items": { "$ref": "#/$defs/impactMatcher" } },
+        "forbiddenImpacts": { "type": "array", "items": { "$ref": "#/$defs/impactMatcher" } },
+        "requiredTests": { "type": "array", "items": { "$ref": "#/$defs/testMatcher" } },
+        "forbiddenTests": { "type": "array", "items": { "$ref": "#/$defs/testMatcher" } },
+        "requiredUnknowns": { "type": "array", "items": { "$ref": "#/$defs/unknownMatcher" } },
+        "forbiddenUnknowns": { "type": "array", "items": { "$ref": "#/$defs/unknownMatcher" } },
+        "requiredPolicies": { "type": "array", "items": { "$ref": "#/$defs/policyMatcher" } },
+        "forbiddenPolicies": { "type": "array", "items": { "$ref": "#/$defs/policyMatcher" } },
+        "requiredWaivers": { "type": "array", "items": { "$ref": "#/$defs/waiverMatcher" } },
+        "allowUnexpected": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "expected": {
+            "type": "object",
+            "properties": { "allowUnexpected": { "const": true } },
+            "required": ["allowUnexpected"]
+          }
+        },
+        "required": ["expected"]
+      },
+      "then": { "required": ["unexpectedRationale"] }
+    }
+  ],
+  "$defs": {
+    "coverageExpectation": {
+      "type": "object",
+      "required": ["totalChangedFiles", "analyzed", "partiallyAnalyzed", "unsupported", "intentionallyExcluded"],
+      "properties": {
+        "totalChangedFiles": { "type": "integer", "minimum": 0 },
+        "analyzed": { "type": "integer", "minimum": 0 },
+        "partiallyAnalyzed": { "type": "integer", "minimum": 0 },
+        "unsupported": { "type": "integer", "minimum": 0 },
+        "intentionallyExcluded": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "changeMatcher": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "kind": { "enum": ["symbol", "contract", "schema", "event", "configuration", "dependency", "infrastructure"] },
+        "compatibility": { "enum": ["compatible", "potentially_breaking", "breaking", "unknown"] },
+        "componentKind": { "$ref": "#/$defs/componentKind" },
+        "componentName": { "type": "string", "minLength": 1 },
+        "summaryContains": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "impactMatcher": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "ruleId": { "type": "string", "minLength": 1 },
+        "category": { "enum": ["direct", "transitive", "contract", "test_gap", "policy", "heuristic"] },
+        "severity": { "$ref": "impact-types.schema.json#/$defs/severity" },
+        "confidence": { "$ref": "impact-types.schema.json#/$defs/confidence" },
+        "affectedComponentKind": { "$ref": "#/$defs/componentKind" },
+        "affectedComponentName": { "type": "string", "minLength": 1 },
+        "summaryContains": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "testMatcher": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "testName": { "type": "string", "minLength": 1 },
+        "commandContains": { "type": "string", "minLength": 1 },
+        "reasonContains": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "unknownMatcher": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "type": { "enum": ["unsupported_file", "dynamic_import", "reflection", "generated_code", "missing_repository", "unresolved_symbol", "analyzer_gap", "other"] },
+        "path": { "type": "string", "minLength": 1 },
+        "summaryContains": { "type": "string", "minLength": 1 },
+        "blockingRelevance": { "enum": ["none", "possible", "required"] }
+      },
+      "additionalProperties": false
+    },
+    "policyMatcher": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "ruleId": { "type": "string", "minLength": 1 },
+        "ruleState": { "enum": ["active", "suspended"] },
+        "result": { "enum": ["pass", "warn", "fail", "not_evaluated"] },
+        "required": { "type": "boolean" },
+        "suspensionScope": { "$ref": "impact-types.schema.json#/$defs/suspensionScope" },
+        "findingId": { "type": "string", "minLength": 1 },
+        "analysisGapId": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "waiverMatcher": {
+      "type": "object",
+      "minProperties": 1,
+      "properties": {
+        "findingId": { "type": "string", "minLength": 1 },
+        "scope": { "$ref": "impact-types.schema.json#/$defs/waiverScope" },
+        "status": { "enum": ["pending", "active", "expired", "revoked"] }
+      },
+      "additionalProperties": false
+    },
+    "componentKind": {
+      "enum": ["file", "module", "package", "symbol", "api", "graphql", "event", "database", "config", "infrastructure", "test", "service", "repository"]
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "typescript-export-removed",
+  "title": "Removing a public TypeScript field affects a consumer",
+  "description": "The currency field is removed while checkout still consumes it.",
+  "tags": ["typescript", "contract", "consumer", "test-selection"],
+  "snapshots": {
+    "before": "before",
+    "after": "after"
+  },
+  "capabilities": ["typescript.exports", "typescript.references", "vitest.discovery"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": {
+      "totalChangedFiles": 1,
+      "analyzed": 1,
+      "partiallyAnalyzed": 0,
+      "unsupported": 0,
+      "intentionallyExcluded": 0
+    },
+    "requiredChanges": [
+      {
+        "kind": "contract",
+        "compatibility": "breaking",
+        "componentKind": "symbol",
+        "componentName": "PaymentResponse.currency"
+      }
+    ],
+    "forbiddenChanges": [],
+    "requiredImpacts": [
+      {
+        "ruleId": "typescript.export-member-removed",
+        "category": "contract",
+        "affectedComponentName": "formatPayment"
+      }
+    ],
+    "forbiddenImpacts": [
+      {
+        "affectedComponentName": "unrelatedAdminFunction"
+      }
+    ],
+    "requiredTests": [
+      {
+        "testName": "formatPayment test"
+      }
+    ],
+    "forbiddenTests": [],
+    "requiredUnknowns": [],
+    "forbiddenUnknowns": [
+      {
+        "type": "unsupported_file"
+      }
+    ],
+    "requiredPolicies": [],
+    "forbiddenPolicies": [],
+    "requiredWaivers": [],
+    "allowUnexpected": false
+  }
+}
