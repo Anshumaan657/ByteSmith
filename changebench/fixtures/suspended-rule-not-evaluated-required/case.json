@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "suspended-rule-not-evaluated-required",
+  "title": "Unsafe required suspended rule execution is incomplete",
+  "description": "A required suspended rule that cannot execute emits not_evaluated and an explicit required analysis gap.",
+  "tags": ["suspension", "not-evaluated", "incomplete"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["policy.suspension", "failure.required-policy"],
+  "expected": {
+    "conclusion": "incomplete",
+    "coverage": {
+      "totalChangedFiles": 1,
+      "analyzed": 0,
+      "partiallyAnalyzed": 1,
+      "unsupported": 0,
+      "intentionallyExcluded": 0
+    },
+    "requiredChanges": [],
+    "forbiddenChanges": [],
+    "requiredImpacts": [],
+    "forbiddenImpacts": [],
+    "requiredTests": [],
+    "forbiddenTests": [],
+    "requiredUnknowns": [
+      { "type": "analyzer_gap", "blockingRelevance": "required", "summaryContains": "unsafe" }
+    ],
+    "forbiddenUnknowns": [],
+    "requiredPolicies": [
+      {
+        "ruleId": "typescript.dynamic-contract",
+        "ruleState": "suspended",
+        "result": "not_evaluated",
+        "required": true,
+        "analysisGapId": "unknown.dynamic-contract"
+      }
+    ],
+    "forbiddenPolicies": [
+      { "ruleId": "typescript.dynamic-contract", "result": "pass" }
+    ],
+    "requiredWaivers": [],
+    "allowUnexpected": false
+  }
+}

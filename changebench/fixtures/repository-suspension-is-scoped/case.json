@@ -1,0 +1,40 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "repository-suspension-is-scoped",
+  "title": "Repository suspension does not become global",
+  "description": "The policy report retains the exact repository suspension scope and forbids a global scope result.",
+  "tags": ["suspension", "scope", "repository"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["policy.suspension"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": {
+      "totalChangedFiles": 1,
+      "analyzed": 1,
+      "partiallyAnalyzed": 0,
+      "unsupported": 0,
+      "intentionallyExcluded": 0
+    },
+    "requiredChanges": [],
+    "forbiddenChanges": [],
+    "requiredImpacts": [],
+    "forbiddenImpacts": [],
+    "requiredTests": [],
+    "forbiddenTests": [],
+    "requiredUnknowns": [],
+    "forbiddenUnknowns": [],
+    "requiredPolicies": [
+      {
+        "ruleId": "typescript.path-resolution",
+        "ruleState": "suspended",
+        "result": "warn",
+        "suspensionScope": "repository"
+      }
+    ],
+    "forbiddenPolicies": [
+      { "ruleId": "typescript.path-resolution", "suspensionScope": "global" }
+    ],
+    "requiredWaivers": [],
+    "allowUnexpected": false
+  }
+}

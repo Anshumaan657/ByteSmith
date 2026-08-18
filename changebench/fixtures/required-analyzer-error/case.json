@@ -1,0 +1,33 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "required-analyzer-error",
+  "title": "Required analyzer failure cannot pass",
+  "description": "Injected required analyzer failure produces error and an explicit required gap.",
+  "tags": ["failure", "required-analyzer", "error"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["failure.required-analyzer"],
+  "expected": {
+    "conclusion": "error",
+    "coverage": {
+      "totalChangedFiles": 1,
+      "analyzed": 0,
+      "partiallyAnalyzed": 1,
+      "unsupported": 0,
+      "intentionallyExcluded": 0
+    },
+    "requiredChanges": [],
+    "forbiddenChanges": [],
+    "requiredImpacts": [],
+    "forbiddenImpacts": [],
+    "requiredTests": [],
+    "forbiddenTests": [],
+    "requiredUnknowns": [
+      { "type": "analyzer_gap", "blockingRelevance": "required" }
+    ],
+    "forbiddenUnknowns": [],
+    "requiredPolicies": [],
+    "forbiddenPolicies": [],
+    "requiredWaivers": [],
+    "allowUnexpected": false
+  }
+}
