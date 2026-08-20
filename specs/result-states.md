@@ -108,8 +108,8 @@ Expiry or revocation does not mutate a historical manifest. On re-evaluation:
 - the reactivated finding participates normally in policy derivation; and
 - an expired waiver cannot relabel an old manifest as `pass`.
 
-Stateless CLI and GitHub Action runs surface expiry on their next run.
-Self-Hosted SHOULD queue re-evaluation when appropriate.
+CLI and GitHub Action runs surface expiry on their next run. Any future
+persistent deployment SHOULD queue re-evaluation when appropriate.
 
 ## Appeals
 

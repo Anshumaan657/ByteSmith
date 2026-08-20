@@ -3,8 +3,8 @@
 ## Review command
 
 ```bash
-pnpm install --frozen-lockfile
-pnpm phase0:check
+corepack pnpm install --frozen-lockfile
+corepack pnpm phase0:check
 ```
 
 ## Exit-gate evidence
@@ -36,7 +36,7 @@ pnpm phase0:check
 
 ## Reviewer decision
 
-- [ ] Approve schema version `1.0.0` as the Phase 0 freeze.
+- [x] Approve schema version `1.0.0` as the Phase 0 freeze.
 - [ ] Request changes before freeze.
 
 No public package API is frozen by this phase. The code under `scripts/lib/` is a

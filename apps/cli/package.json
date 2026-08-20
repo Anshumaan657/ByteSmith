@@ -1,0 +1,17 @@
+{
+  "name": "bytesmith",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local ByteSmith Verify command-line interface",
+  "type": "module",
+  "bin": {
+    "bytesmith": "./dist/index.js"
+  },
+  "exports": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

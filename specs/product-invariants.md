@@ -120,10 +120,9 @@ NOT satisfy or be published as the result for another revision.
 
 ## 11. One shared kernel and contract
 
-CLI, GitHub Action, MCP server, and Self-Hosted interfaces MUST produce or
-consume the same versioned Impact Manifest and use the same derivation and
-canonicalization rules. Presentation adapters MUST NOT invent a different
-ByteSmith conclusion.
+CLI and GitHub Action interfaces MUST produce or consume the same versioned
+Impact Manifest and use the same derivation and canonicalization rules. Any
+future presentation adapter MUST NOT invent a different ByteSmith conclusion.
 
 Core verification MUST operate locally without ByteSmith Cloud, an account, or
 a paid AI key.

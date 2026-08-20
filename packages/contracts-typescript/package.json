@@ -1,0 +1,12 @@
+{
+  "name": "@bytesmith/contracts-typescript",
+  "version": "0.1.0",
+  "private": true,
+  "description": "TypeScript and JavaScript semantic contract analyzer",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "name": "@bytesmith/evidence",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Revision-bound deterministic evidence and provenance",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}

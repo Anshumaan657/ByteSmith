@@ -1,0 +1,12 @@
+{
+  "name": "@bytesmith/impact-manifest",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Canonical ByteSmith Impact Manifest construction and serialization",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}
