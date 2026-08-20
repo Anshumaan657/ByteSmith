@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "direct-consumer-affected",
+  "title": "Direct consumer affected by a contract change",
+  "description": "A direct importer that calls a changed exported function is identified as affected.",
+  "tags": ["mvp-11", "typescript", "direct-consumer"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports", "typescript.references"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "calculateTax" }],
+    "forbiddenChanges": [],
+    "requiredImpacts": [{ "ruleId": "typescript.direct-consumer", "category": "direct", "affectedComponentName": "checkoutTotal" }],
+    "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [], "requiredUnknowns": [], "forbiddenUnknowns": [],
+    "requiredPolicies": [], "forbiddenPolicies": [], "requiredWaivers": [], "allowUnexpected": false
+  }
+}

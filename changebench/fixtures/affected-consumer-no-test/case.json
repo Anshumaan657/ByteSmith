@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "affected-consumer-no-test",
+  "title": "Affected consumer has no discovered test",
+  "description": "An affected consumer without test coverage produces an explicit test-gap impact instead of inventing a test.",
+  "tags": ["mvp-14", "typescript", "test-gap"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.references", "vitest.discovery"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "sendEmail" }],
+    "forbiddenChanges": [],
+    "requiredImpacts": [{ "ruleId": "tests.affected-consumer-uncovered", "category": "test_gap", "affectedComponentName": "notifyCustomer" }],
+    "forbiddenImpacts": [], "requiredTests": [],
+    "forbiddenTests": [{ "testName": "notify customer test" }],
+    "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

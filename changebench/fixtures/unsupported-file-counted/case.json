@@ -3,7 +3,7 @@
   "id": "unsupported-file-counted",
   "title": "Unsupported changed files remain in the full-diff denominator",
   "description": "A TypeScript file and an unsupported workflow file both change; the unsupported file must remain visible.",
-  "tags": ["coverage", "unsupported", "full-diff-denominator"],
+  "tags": ["mvp-18", "coverage", "unsupported", "full-diff-denominator"],
   "snapshots": {
     "before": "before",
     "after": "after"

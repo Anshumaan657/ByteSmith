@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "relevant-test-selected",
+  "title": "Relevant test selected for affected consumer",
+  "description": "The test covering the affected checkout consumer is recommended with a reproducible command.",
+  "tags": ["mvp-13", "typescript", "test-selection"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.references", "vitest.discovery"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "calculateTax" }],
+    "forbiddenChanges": [],
+    "requiredImpacts": [{ "category": "direct", "affectedComponentName": "checkoutTotal" }], "forbiddenImpacts": [],
+    "requiredTests": [{ "testName": "checkout total test", "commandContains": "checkout.test.ts", "reasonContains": "checkoutTotal" }],
+    "forbiddenTests": [], "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

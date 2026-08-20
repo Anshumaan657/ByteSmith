@@ -29,6 +29,9 @@ const fixtureIds = (await fs.readdir(fixtureDirectory, { withFileTypes: true }))
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
   .sort();
+const mvpTagCounts = new Map(
+  Array.from({ length: 20 }, (_, index) => [`mvp-${String(index + 1).padStart(2, "0")}`, 0])
+);
 
 for (const fixtureId of fixtureIds) {
   const directory = path.join(fixtureDirectory, fixtureId);
@@ -40,6 +43,9 @@ for (const fixtureId of fixtureIds) {
   }
   if (fixture.id !== fixtureId) {
     throw new Error(`${fixtureId}: case id must match its directory.`);
+  }
+  for (const tag of fixture.tags ?? []) {
+    if (mvpTagCounts.has(tag)) mvpTagCounts.set(tag, mvpTagCounts.get(tag) + 1);
   }
 
   for (const snapshot of [fixture.snapshots.before, fixture.snapshots.after]) {
@@ -58,6 +64,11 @@ for (const fixtureId of fixtureIds) {
   }
 }
 
+const invalidMvpTags = [...mvpTagCounts].filter(([, count]) => count !== 1);
+if (invalidMvpTags.length > 0) {
+  throw new Error(`Each MVP case tag mvp-01 through mvp-20 must occur exactly once: ${JSON.stringify(invalidMvpTags)}`);
+}
+
 const adrDirectory = path.join(root, "docs", "architecture-decisions");
 const phaseZeroAdrs = (await fs.readdir(adrDirectory)).filter((name) => /^000\d-.*\.md$/u.test(name));
 if (phaseZeroAdrs.length < 6) {
@@ -66,6 +77,6 @@ if (phaseZeroAdrs.length < 6) {
 
 process.stdout.write(
   `Validated ${Object.keys(schemas).length} Draft 2020-12 schemas, `
-  + `${fixtureIds.length} ChangeBench cases, ${requiredSpecifications.length} normative specs, `
+  + `${fixtureIds.length} ChangeBench cases (all 20 MVP behaviors), ${requiredSpecifications.length} normative specs, `
   + `and ${phaseZeroAdrs.length} Phase 0 ADRs.\n`
 );

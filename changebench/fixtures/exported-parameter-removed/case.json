@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "exported-parameter-removed",
+  "title": "Exported function parameter removed",
+  "description": "Removing a parameter from a public TypeScript function is identified as a breaking contract change.",
+  "tags": ["mvp-02", "typescript", "function-contract"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "formatMoney" }],
+    "forbiddenChanges": [], "requiredImpacts": [], "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [],
+    "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

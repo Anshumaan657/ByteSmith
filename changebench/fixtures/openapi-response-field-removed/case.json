@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "openapi-response-field-removed",
+  "title": "OpenAPI response field removed",
+  "description": "Removing a documented response property is a breaking API schema change.",
+  "tags": ["mvp-10", "openapi", "response-schema"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["openapi.schemas"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "schema", "compatibility": "breaking", "componentKind": "api", "componentName": "OrderResponse.currency" }],
+    "forbiddenChanges": [], "requiredImpacts": [], "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [],
+    "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

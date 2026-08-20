@@ -4,6 +4,7 @@ dist/
 *.tsbuildinfo
 coverage/
 *.log
+changebench/reports/*.json
 .DS_Store
 .env
 .env.*

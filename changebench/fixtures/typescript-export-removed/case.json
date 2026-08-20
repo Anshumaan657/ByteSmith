@@ -3,7 +3,7 @@
   "id": "typescript-export-removed",
   "title": "Removing a public TypeScript field affects a consumer",
   "description": "The currency field is removed while checkout still consumes it.",
-  "tags": ["typescript", "contract", "consumer", "test-selection"],
+  "tags": ["mvp-06", "typescript", "contract", "consumer", "test-selection"],
   "snapshots": {
     "before": "before",
     "after": "after"
