@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "exported-return-type-changed",
+  "title": "Exported return type changed",
+  "description": "Changing the return type of a public function is a breaking contract change.",
+  "tags": ["mvp-05", "typescript", "return-type"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "getBalance" }],
+    "forbiddenChanges": [], "requiredImpacts": [], "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [],
+    "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

@@ -66,7 +66,9 @@ The initial contract suite includes:
 - expired/revoked waiver reactivates a still-applicable finding;
 - `allowUnexpected: false` rejects an unmatched result.
 
-Phase 2 expands this foundation to the complete 34+ analyzer fixture set.
+Phase 2 expands this foundation to the complete 20-case MVP behavior set while
+retaining every Phase 0 governance safety fixture. Broader analyzer coverage is
+added with the analyzers in later phases.
 
 ## Runner behavior
 

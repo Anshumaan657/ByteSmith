@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "safe-internal-change",
+  "title": "Safe internal implementation change",
+  "description": "Changing a private implementation without changing its exported contract remains compatible.",
+  "tags": ["mvp-01", "typescript", "safe-change"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports"],
+  "expected": {
+    "conclusion": "pass",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "symbol", "compatibility": "compatible", "componentName": "normalizeEmail" }],
+    "forbiddenChanges": [{ "compatibility": "breaking" }],
+    "requiredImpacts": [], "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [],
+    "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

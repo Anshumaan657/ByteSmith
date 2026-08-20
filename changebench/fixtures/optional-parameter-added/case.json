@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "optional-parameter-added",
+  "title": "Optional exported parameter added",
+  "description": "Adding an optional parameter preserves compatibility for existing callers.",
+  "tags": ["mvp-04", "typescript", "function-contract"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports"],
+  "expected": {
+    "conclusion": "pass",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "compatible", "componentName": "createInvoice" }],
+    "forbiddenChanges": [{ "compatibility": "breaking" }], "requiredImpacts": [], "forbiddenImpacts": [],
+    "requiredTests": [], "forbiddenTests": [], "requiredUnknowns": [], "forbiddenUnknowns": [],
+    "requiredPolicies": [], "forbiddenPolicies": [], "requiredWaivers": [], "allowUnexpected": false
+  }
+}

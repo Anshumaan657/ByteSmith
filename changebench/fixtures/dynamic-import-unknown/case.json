@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "dynamic-import-unknown",
+  "title": "Dynamic import uncertainty is explicit",
+  "description": "A computed dynamic import that may reach the changed contract is surfaced as an uncertainty boundary.",
+  "tags": ["mvp-17", "typescript", "uncertainty"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.references", "typescript.dynamic-import"],
+  "expected": {
+    "conclusion": "incomplete",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 0, "partiallyAnalyzed": 1, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "runPayment" }],
+    "forbiddenChanges": [], "requiredImpacts": [], "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [],
+    "requiredUnknowns": [{ "type": "dynamic_import", "path": "loader.ts", "blockingRelevance": "required", "summaryContains": "computed" }],
+    "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

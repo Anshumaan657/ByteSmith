@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "typescript-path-alias",
+  "title": "Consumer resolved through TypeScript path alias",
+  "description": "Reference analysis follows a configured TypeScript path alias to the affected consumer.",
+  "tags": ["mvp-16", "typescript", "path-alias"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.references", "typescript.path-resolution"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "getProduct" }],
+    "forbiddenChanges": [],
+    "requiredImpacts": [{ "ruleId": "typescript.direct-consumer", "category": "direct", "affectedComponentName": "renderProduct" }],
+    "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [],
+    "requiredUnknowns": [], "forbiddenUnknowns": [{ "type": "unresolved_symbol" }],
+    "requiredPolicies": [], "forbiddenPolicies": [], "requiredWaivers": [], "allowUnexpected": false
+  }
+}

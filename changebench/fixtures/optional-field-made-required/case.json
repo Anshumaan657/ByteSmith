@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "optional-field-made-required",
+  "title": "Optional interface field made required",
+  "description": "Making an exported interface member required breaks values created against the previous contract.",
+  "tags": ["mvp-07", "typescript", "interface-contract"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "Customer.phone" }],
+    "forbiddenChanges": [], "requiredImpacts": [], "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [],
+    "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

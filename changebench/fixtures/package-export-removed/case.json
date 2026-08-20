@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "package-export-removed",
+  "title": "Package entry-point export removed",
+  "description": "Removing a symbol from the public package barrel is reported as a breaking dependency contract change.",
+  "tags": ["mvp-08", "typescript", "package-export"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports", "typescript.package-exports"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "dependency", "compatibility": "breaking", "componentKind": "package", "componentName": "@shop/contracts#createOrder" }],
+    "forbiddenChanges": [], "requiredImpacts": [], "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [],
+    "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

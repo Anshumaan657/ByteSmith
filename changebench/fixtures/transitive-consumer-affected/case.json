@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "transitive-consumer-affected",
+  "title": "Transitive consumer affected through a wrapper",
+  "description": "A consumer reached through an intermediate module is reported as a transitive impact.",
+  "tags": ["mvp-12", "typescript", "transitive-consumer"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.exports", "typescript.references"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "loadUser" }],
+    "forbiddenChanges": [],
+    "requiredImpacts": [{ "ruleId": "typescript.transitive-consumer", "category": "transitive", "affectedComponentName": "renderProfile" }],
+    "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [], "requiredUnknowns": [], "forbiddenUnknowns": [],
+    "requiredPolicies": [], "forbiddenPolicies": [], "requiredWaivers": [], "allowUnexpected": false
+  }
+}

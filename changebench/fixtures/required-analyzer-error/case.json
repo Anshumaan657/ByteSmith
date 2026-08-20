@@ -3,7 +3,7 @@
   "id": "required-analyzer-error",
   "title": "Required analyzer failure cannot pass",
   "description": "Injected required analyzer failure produces error and an explicit required gap.",
-  "tags": ["failure", "required-analyzer", "error"],
+  "tags": ["mvp-19", "failure", "required-analyzer", "error"],
   "snapshots": { "before": "before", "after": "after" },
   "capabilities": ["failure.required-analyzer"],
   "expected": {

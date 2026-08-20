@@ -3,7 +3,7 @@
   "id": "unexpected-result-rejected",
   "title": "Unexpected results fail exhaustive matching",
   "description": "An injected unmatched change is counted as a false positive because allowUnexpected is false.",
-  "tags": ["changebench", "unexpected", "false-positive"],
+  "tags": ["mvp-20", "changebench", "unexpected", "false-positive"],
   "snapshots": { "before": "before", "after": "after" },
   "capabilities": ["changebench.matcher"],
   "expected": {

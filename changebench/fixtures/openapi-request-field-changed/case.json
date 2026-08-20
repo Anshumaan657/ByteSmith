@@ -1,0 +1,17 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "openapi-request-field-changed",
+  "title": "OpenAPI request field type changed",
+  "description": "Changing an API request field type is reported as a breaking schema contract.",
+  "tags": ["mvp-09", "openapi", "request-schema"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["openapi.schemas"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "schema", "compatibility": "breaking", "componentKind": "api", "componentName": "CreateOrderRequest.quantity" }],
+    "forbiddenChanges": [], "requiredImpacts": [], "forbiddenImpacts": [], "requiredTests": [], "forbiddenTests": [],
+    "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}

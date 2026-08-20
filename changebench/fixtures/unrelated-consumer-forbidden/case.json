@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "unrelated-consumer-forbidden",
+  "title": "Unrelated consumer is not reported",
+  "description": "A module outside the changed symbol's reference graph must not be labeled as affected or selected for testing.",
+  "tags": ["mvp-15", "typescript", "noise-control"],
+  "snapshots": { "before": "before", "after": "after" },
+  "capabilities": ["typescript.references", "vitest.discovery"],
+  "expected": {
+    "conclusion": "warn",
+    "coverage": { "totalChangedFiles": 1, "analyzed": 1, "partiallyAnalyzed": 0, "unsupported": 0, "intentionallyExcluded": 0 },
+    "requiredChanges": [{ "kind": "contract", "compatibility": "breaking", "componentName": "calculateTax" }],
+    "forbiddenChanges": [],
+    "requiredImpacts": [{ "category": "direct", "affectedComponentName": "checkoutTotal" }],
+    "forbiddenImpacts": [{ "affectedComponentName": "renderAdminDashboard" }],
+    "requiredTests": [], "forbiddenTests": [{ "testName": "admin dashboard test" }],
+    "requiredUnknowns": [], "forbiddenUnknowns": [], "requiredPolicies": [], "forbiddenPolicies": [],
+    "requiredWaivers": [], "allowUnexpected": false
+  }
+}
