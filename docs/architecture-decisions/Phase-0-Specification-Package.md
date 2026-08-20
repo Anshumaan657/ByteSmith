@@ -2,9 +2,8 @@
 
 ## Status
 
-This package is the review candidate for the Phase 0 semantic and schema freeze.
-It is intentionally independent of CLI, GitHub Action, MCP, and Self-Hosted
-presentation code.
+This package is the approved Phase 0 semantic and schema freeze for ByteSmith
+Verify 0.1. It is intentionally independent of user-interface adapters.
 
 ## Normative documents
 
@@ -38,8 +37,8 @@ boundaries.
 Run:
 
 ```bash
-pnpm install --frozen-lockfile
-pnpm phase0:check
+corepack pnpm install --frozen-lockfile
+corepack pnpm phase0:check
 ```
 
 The check compiles all schemas, validates every ChangeBench case, checks required

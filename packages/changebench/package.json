@@ -1,0 +1,12 @@
+{
+  "name": "@bytesmith/changebench",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Deterministic benchmark runner for contract, impact, test, and unknown findings",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}

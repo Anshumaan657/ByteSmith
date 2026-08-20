@@ -1,0 +1,14 @@
+{
+  "name": "@bytesmith/github-action",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Advisory ByteSmith Verify pull-request integration",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=22.13.0"
+  }
+}

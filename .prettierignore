@@ -1,0 +1,9 @@
+changebench/fixtures/
+changebench/reports/
+changebench/baselines/
+docs/
+schemas/
+specs/
+pnpm-lock.yaml
+node_modules/
+dist/

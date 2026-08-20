@@ -35,11 +35,6 @@ The GitHub Action/check adapter MUST:
 - keep emergency disable visible and audited; and
 - prevent a result for an older head revision from satisfying the current head.
 
-## MCP and Self-Hosted
-
-MCP responses carry manifest revision, digest, engine/rule versions, status, and
-unknowns. AI summaries cannot mutate evidence or status. Self-Hosted views retain
-the same result hierarchy and governance records.
-
-These requirements are normative now and implemented/tested by their later
-delivery phases against the frozen manifest contract.
+The CLI and GitHub Action requirements are normative for Verify 0.1. Any future
+interface must preserve this contract and cannot mutate evidence, status, or the
+result hierarchy.

@@ -2,9 +2,9 @@
 
 ## Purpose
 
-The Impact Manifest is ByteSmith’s canonical, versioned verification result. The
-CLI, GitHub Action, MCP server, and Self-Hosted platform MUST use this contract.
-It records changed scope, compatibility conclusions, affected consumers, test
+The Impact Manifest is ByteSmith’s canonical, versioned verification result.
+The CLI, GitHub Action, and any future interface MUST use this contract. It
+records changed scope, compatibility conclusions, affected consumers, test
 evidence, analysis limits, governance state, provenance, and integrity.
 
 The structural contract is `../schemas/impact-manifest.schema.json`. Terms are

@@ -1,19 +1,34 @@
 {
   "name": "bytesmith",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.19.0",
   "engines": {
-    "node": ">=22.0.0"
+    "node": ">=22.13.0"
   },
   "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean",
+    "typecheck": "tsc -b --pretty false",
+    "lint": "eslint apps packages scripts eslint.config.js",
+    "format": "prettier --write package.json pnpm-workspace.yaml \"{apps,packages}/**/*.{json,ts}\" \"*.{js,json}\" \".github/**/*.yml\"",
+    "format:check": "prettier --check package.json pnpm-workspace.yaml \"{apps,packages}/**/*.{json,ts}\" \"*.{js,json}\" \".github/**/*.yml\"",
     "validate:spec": "node scripts/validate-spec.mjs",
+    "validate:workspace": "node scripts/validate-workspace.mjs",
+    "test": "node --test scripts/test/*.test.mjs",
     "test:phase0": "node --test scripts/test/*.test.mjs",
-    "phase0:check": "node scripts/validate-spec.mjs && node --test scripts/test/*.test.mjs"
+    "phase0:check": "node scripts/validate-spec.mjs && node --test scripts/test/*.test.mjs",
+    "check": "node scripts/validate-workspace.mjs && node scripts/validate-spec.mjs && node --test scripts/test/*.test.mjs && tsc -b --pretty false && eslint apps packages scripts eslint.config.js && prettier --check package.json pnpm-workspace.yaml \"{apps,packages}/**/*.{json,ts}\" \"*.{js,json}\" \".github/**/*.yml\""
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "ajv": "8.20.0",
-    "ajv-formats": "3.0.1"
+    "ajv-formats": "3.0.1",
+    "eslint": "10.8.1",
+    "globals": "17.11.0",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.67.0"
   }
 }

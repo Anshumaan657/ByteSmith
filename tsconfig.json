@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "files": [],
+  "references": [
+    { "path": "./packages/impact-types" },
+    { "path": "./packages/evidence" },
+    { "path": "./packages/ir" },
+    { "path": "./packages/canonicalization" },
+    { "path": "./packages/impact-manifest" },
+    { "path": "./packages/manifest-validator" },
+    { "path": "./packages/vcs-git" },
+    { "path": "./packages/repository-inventory" },
+    { "path": "./packages/analyzer-sdk" },
+    { "path": "./packages/contracts-typescript" },
+    { "path": "./packages/contracts-openapi" },
+    { "path": "./packages/consumer-analysis" },
+    { "path": "./packages/test-intelligence" },
+    { "path": "./packages/storage-sqlite" },
+    { "path": "./packages/changebench" },
+    { "path": "./apps/cli" },
+    { "path": "./apps/github-action" }
+  ]
+}

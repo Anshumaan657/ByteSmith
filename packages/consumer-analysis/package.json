@@ -1,0 +1,12 @@
+{
+  "name": "@bytesmith/consumer-analysis",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Bounded evidence-backed consumer linkage within one repository",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ]
+}

@@ -5,9 +5,9 @@
 
 ## Decision
 
-CLI, GitHub Action, MCP server, and Self-Hosted use one versioned Impact
-Manifest, one result derivation, and one canonicalization algorithm. Interface
-adapters may change presentation but not the ByteSmith conclusion.
+CLI, GitHub Action, and any future interface use one versioned Impact Manifest,
+one result derivation, and one canonicalization algorithm. Interface adapters
+may change presentation but not the ByteSmith conclusion.
 
 ## Consequences
 
