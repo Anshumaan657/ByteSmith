@@ -197,6 +197,20 @@ next slice begins.
 - Git errors and unsupported special files cannot produce clean success.
 - Relevant ChangeBench cases pass on macOS and Linux.
 
+## Phase 3 delivery status
+
+- Phase 3A: complete and merged.
+- Phase 3B: complete and merged.
+- Phase 3C: complete and merged.
+- Phase 3D: complete and merged.
+- Phase 3E: implemented on its review branch; approval and merge pending.
+
+Phase 3E now connects exact Git resolution, normalized diff, exhaustive
+inventory, revision-bound evidence, canonical IR, Impact Manifest construction,
+Draft 2020-12 validation, semantic validation, canonical serialization, and
+SHA-256 digest verification. Clean and exact-snapshot incremental executions
+are required to agree semantically.
+
 # PHASE 4 — TypeScript and JavaScript Semantic Analyzer
 
 ## Objective

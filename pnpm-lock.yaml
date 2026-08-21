@@ -72,7 +72,26 @@ importers:
         specifier: workspace:*
         version: link:../impact-types
 
-  packages/impact-manifest: {}
+  packages/impact-manifest:
+    dependencies:
+      '@bytesmith/canonicalization':
+        specifier: workspace:*
+        version: link:../canonicalization
+      '@bytesmith/evidence':
+        specifier: workspace:*
+        version: link:../evidence
+      '@bytesmith/impact-types':
+        specifier: workspace:*
+        version: link:../impact-types
+      '@bytesmith/ir':
+        specifier: workspace:*
+        version: link:../ir
+      '@bytesmith/repository-inventory':
+        specifier: workspace:*
+        version: link:../repository-inventory
+      '@bytesmith/vcs-git':
+        specifier: workspace:*
+        version: link:../vcs-git
 
   packages/impact-types: {}
 
@@ -88,7 +107,23 @@ importers:
         specifier: workspace:*
         version: link:../impact-types
 
-  packages/manifest-validator: {}
+  packages/manifest-validator:
+    dependencies:
+      '@bytesmith/canonicalization':
+        specifier: workspace:*
+        version: link:../canonicalization
+      '@bytesmith/impact-manifest':
+        specifier: workspace:*
+        version: link:../impact-manifest
+      '@bytesmith/impact-types':
+        specifier: workspace:*
+        version: link:../impact-types
+      ajv:
+        specifier: 8.20.0
+        version: 8.20.0
+      ajv-formats:
+        specifier: 3.0.1
+        version: 3.0.1(ajv@8.20.0)
 
   packages/repository-inventory:
     dependencies:
