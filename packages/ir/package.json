@@ -8,5 +8,10 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@bytesmith/canonicalization": "workspace:*",
+    "@bytesmith/evidence": "workspace:*",
+    "@bytesmith/impact-types": "workspace:*"
+  }
 }

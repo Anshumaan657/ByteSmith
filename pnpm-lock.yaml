@@ -42,7 +42,11 @@ importers:
 
   packages/analyzer-sdk: {}
 
-  packages/canonicalization: {}
+  packages/canonicalization:
+    dependencies:
+      '@bytesmith/impact-types':
+        specifier: workspace:*
+        version: link:../impact-types
 
   packages/changebench:
     dependencies:
@@ -59,13 +63,30 @@ importers:
 
   packages/contracts-typescript: {}
 
-  packages/evidence: {}
+  packages/evidence:
+    dependencies:
+      '@bytesmith/canonicalization':
+        specifier: workspace:*
+        version: link:../canonicalization
+      '@bytesmith/impact-types':
+        specifier: workspace:*
+        version: link:../impact-types
 
   packages/impact-manifest: {}
 
   packages/impact-types: {}
 
-  packages/ir: {}
+  packages/ir:
+    dependencies:
+      '@bytesmith/canonicalization':
+        specifier: workspace:*
+        version: link:../canonicalization
+      '@bytesmith/evidence':
+        specifier: workspace:*
+        version: link:../evidence
+      '@bytesmith/impact-types':
+        specifier: workspace:*
+        version: link:../impact-types
 
   packages/manifest-validator: {}
 
