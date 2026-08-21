@@ -1,2 +1,3 @@
-// The canonical IR is implemented after exhaustive Git inventory.
-export {};
+export * from "./errors.js";
+export * from "./ir.js";
+export type * from "./types.js";
