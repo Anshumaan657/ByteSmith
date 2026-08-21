@@ -8,5 +8,8 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@bytesmith/vcs-git": "workspace:*"
+  }
 }

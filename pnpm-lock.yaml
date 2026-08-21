@@ -69,7 +69,11 @@ importers:
 
   packages/manifest-validator: {}
 
-  packages/repository-inventory: {}
+  packages/repository-inventory:
+    dependencies:
+      '@bytesmith/vcs-git':
+        specifier: workspace:*
+        version: link:../vcs-git
 
   packages/storage-sqlite: {}
 
