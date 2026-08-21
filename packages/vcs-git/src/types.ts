@@ -47,3 +47,29 @@ export interface WorkingTreeState {
   detached: boolean;
   dirty: boolean;
 }
+
+export type GitChangeType =
+  "added" | "modified" | "deleted" | "renamed" | "copied" | "type_changed";
+
+export type GitFileKind =
+  "regular" | "executable" | "symlink" | "submodule" | "unknown";
+
+export interface GitChangedFile {
+  path: string;
+  previousPath?: string;
+  changeType: GitChangeType;
+  oldMode?: string;
+  newMode?: string;
+  oldObjectId?: GitObjectId;
+  newObjectId?: GitObjectId;
+  fileKind: GitFileKind;
+  binary: boolean;
+  similarity?: number;
+}
+
+export interface NormalizedGitDiff {
+  fromCommit: GitObjectId;
+  toCommit: GitObjectId;
+  totalChangedFiles: number;
+  files: GitChangedFile[];
+}

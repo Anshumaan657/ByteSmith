@@ -10,7 +10,14 @@ export type GitErrorCode =
   | "multiple_merge_bases"
   | "repository_identity_unavailable"
   | "head_unborn"
-  | "stale_revision";
+  | "stale_revision"
+  | "diff_failed"
+  | "diff_parse_error"
+  | "diff_status_unsupported"
+  | "diff_path_invalid"
+  | "diff_path_collision"
+  | "diff_duplicate_path"
+  | "diff_metadata_mismatch";
 
 export interface GitErrorOptions {
   operation: string;

@@ -1,9 +1,9 @@
-import { execFile } from "node:child_process";
+import { spawn } from "node:child_process";
 import os from "node:os";
 import { GitError } from "./errors.js";
 
 const defaultTimeoutMs = 15_000;
-const defaultMaxBuffer = 4 * 1024 * 1024;
+const defaultMaxBuffer = 16 * 1024 * 1024;
 
 export interface GitCommandResult {
   stdout: string;
@@ -11,12 +11,10 @@ export interface GitCommandResult {
   exitCode: number;
 }
 
-interface ExecFileFailure extends Error {
-  code?: number | string;
-  killed?: boolean;
-  signal?: NodeJS.Signals;
-  stdout?: string | Buffer;
-  stderr?: string | Buffer;
+export interface GitBinaryCommandResult {
+  stdout: Buffer;
+  stderr: Buffer;
+  exitCode: number;
 }
 
 function gitEnvironment(): NodeJS.ProcessEnv {
@@ -33,63 +31,119 @@ function gitEnvironment(): NodeJS.ProcessEnv {
   };
 }
 
+async function executeGitProcess(
+  directory: string,
+  arguments_: readonly string[],
+): Promise<GitBinaryCommandResult> {
+  return new Promise((resolve, reject) => {
+    const child = spawn("git", ["-C", directory, ...arguments_], {
+      env: gitEnvironment(),
+      shell: false,
+      stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: true,
+    });
+    const stdout: Buffer[] = [];
+    const stderr: Buffer[] = [];
+    let outputBytes = 0;
+    let outputExceeded = false;
+    let timedOut = false;
+    let settled = false;
+
+    const timer = setTimeout(() => {
+      timedOut = true;
+      child.kill("SIGKILL");
+    }, defaultTimeoutMs);
+
+    function collect(target: Buffer[], chunk: Buffer): void {
+      outputBytes += chunk.length;
+      if (outputBytes > defaultMaxBuffer) {
+        outputExceeded = true;
+        child.kill("SIGKILL");
+        return;
+      }
+      target.push(chunk);
+    }
+
+    child.stdout.on("data", (chunk: Buffer) => collect(stdout, chunk));
+    child.stderr.on("data", (chunk: Buffer) => collect(stderr, chunk));
+    child.once("error", (cause: NodeJS.ErrnoException) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      reject(
+        cause.code === "ENOENT"
+          ? new GitError(
+              "git_unavailable",
+              "Git is required but could not be executed.",
+              {
+                operation: "execute_git",
+              },
+            )
+          : new GitError("command_failed", "Git command execution failed.", {
+              operation: "execute_git",
+            }),
+      );
+    });
+    child.once("close", (exitCode, signal) => {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      if (outputExceeded) {
+        reject(
+          new GitError(
+            "command_failed",
+            "Git command output exceeded the safe limit.",
+            {
+              operation: "execute_git",
+            },
+          ),
+        );
+        return;
+      }
+      if (timedOut) {
+        reject(
+          new GitError("command_failed", "Git command execution timed out.", {
+            operation: "execute_git",
+          }),
+        );
+        return;
+      }
+      if (signal) {
+        reject(
+          new GitError(
+            "command_failed",
+            "Git command execution was interrupted.",
+            {
+              operation: "execute_git",
+            },
+          ),
+        );
+        return;
+      }
+      resolve({
+        stdout: Buffer.concat(stdout),
+        stderr: Buffer.concat(stderr),
+        exitCode: exitCode ?? 1,
+      });
+    });
+  });
+}
+
+export async function executeGitBytes(
+  directory: string,
+  arguments_: readonly string[],
+): Promise<GitBinaryCommandResult> {
+  return executeGitProcess(directory, arguments_);
+}
+
 export async function executeGit(
   directory: string,
   arguments_: readonly string[],
 ): Promise<GitCommandResult> {
-  return new Promise((resolve, reject) => {
-    execFile(
-      "git",
-      ["-C", directory, ...arguments_],
-      {
-        encoding: "utf8",
-        env: gitEnvironment(),
-        maxBuffer: defaultMaxBuffer,
-        timeout: defaultTimeoutMs,
-        windowsHide: true,
-      },
-      (error, stdout, stderr) => {
-        if (!error) {
-          resolve({ stdout, stderr, exitCode: 0 });
-          return;
-        }
-        const failure = error as ExecFileFailure;
-        if (failure.code === "ENOENT") {
-          reject(
-            new GitError(
-              "git_unavailable",
-              "Git is required but could not be executed.",
-              { operation: "execute_git" },
-            ),
-          );
-          return;
-        }
-        if (failure.killed || failure.signal || failure.code === "ETIMEDOUT") {
-          reject(
-            new GitError("command_failed", "Git command execution timed out.", {
-              operation: "execute_git",
-            }),
-          );
-          return;
-        }
-        if (failure.code === "ERR_CHILD_PROCESS_STDIO_MAXBUFFER") {
-          reject(
-            new GitError(
-              "command_failed",
-              "Git command output exceeded the safe limit.",
-              {
-                operation: "execute_git",
-              },
-            ),
-          );
-          return;
-        }
-        resolve({
-          stdout: String(failure.stdout ?? stdout ?? ""),
-          stderr: String(failure.stderr ?? stderr ?? ""),
-          exitCode: typeof failure.code === "number" ? failure.code : 1,
-        });
-      },
-    );
-  });
+  const result = await executeGitProcess(directory, arguments_);
+  return {
+    stdout: result.stdout.toString("utf8"),
+    stderr: result.stderr.toString("utf8"),
+    exitCode: result.exitCode,
+  };
 }
