@@ -153,6 +153,26 @@ behavior before production analyzer rules are trusted.
 Create a trustworthy, revision-bound input and representation layer shared by
 every analyzer.
 
+## Delivery slices
+
+Phase 3 is delivered and reviewed through five independently merged slices:
+
+1. **Phase 3A — Exact Git revisions and repository identity.** Repository
+   discovery, immutable commit resolution, merge-base selection, working-tree
+   inspection, and stale-reference checks.
+2. **Phase 3B — Normalized Git diff.** Added, modified, deleted, renamed,
+   copied, binary, and special-file representation.
+3. **Phase 3C — Exhaustive repository inventory.** Exactly one coverage class
+   and a visible reason for every changed path.
+4. **Phase 3D — Revision-bound evidence and canonical IR.** Stable evidence,
+   source locations, IDs, and analyzer-neutral records.
+5. **Phase 3E — Deterministic integration.** End-to-end serialization,
+   incremental/clean agreement, ChangeBench integration, and cross-platform
+   verification.
+
+Each slice must pass the repository quality gate and merge to `main` before the
+next slice begins.
+
 ## Deliverables
 
 - `--base` and `--head` revision resolution

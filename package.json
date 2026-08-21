@@ -16,10 +16,10 @@
     "format:check": "prettier --check package.json pnpm-workspace.yaml \"{apps,packages}/**/*.{json,ts}\" \"*.{js,json}\" \".github/**/*.yml\"",
     "validate:spec": "node scripts/validate-spec.mjs",
     "validate:workspace": "node scripts/validate-workspace.mjs",
-    "test": "tsc -b --pretty false && node --test scripts/test/*.test.mjs packages/changebench/test/*.test.mjs",
+    "test": "tsc -b --pretty false && node --test scripts/test/*.test.mjs packages/*/test/*.test.mjs",
     "test:phase0": "node --test scripts/test/*.test.mjs",
     "phase0:check": "node scripts/validate-spec.mjs && node --test scripts/test/*.test.mjs",
-    "check": "node scripts/validate-workspace.mjs && node scripts/validate-spec.mjs && tsc -b --pretty false && node --test scripts/test/*.test.mjs packages/changebench/test/*.test.mjs && eslint apps packages scripts eslint.config.js && prettier --check package.json pnpm-workspace.yaml \"{apps,packages}/**/*.{json,ts}\" \"*.{js,json}\" \".github/**/*.yml\""
+    "check": "node scripts/validate-workspace.mjs && node scripts/validate-spec.mjs && tsc -b --pretty false && node --test scripts/test/*.test.mjs packages/*/test/*.test.mjs && eslint apps packages scripts eslint.config.js && prettier --check package.json pnpm-workspace.yaml \"{apps,packages}/**/*.{json,ts}\" \"*.{js,json}\" \".github/**/*.yml\""
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
