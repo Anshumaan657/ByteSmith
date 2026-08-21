@@ -8,5 +8,13 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@bytesmith/canonicalization": "workspace:*",
+    "@bytesmith/evidence": "workspace:*",
+    "@bytesmith/impact-types": "workspace:*",
+    "@bytesmith/ir": "workspace:*",
+    "@bytesmith/repository-inventory": "workspace:*",
+    "@bytesmith/vcs-git": "workspace:*"
+  }
 }
