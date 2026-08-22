@@ -1,3 +1,5 @@
+import type { Program } from "typescript";
+
 export type WorkspaceManager = "npm" | "pnpm" | "yarn" | "none";
 export type DiscoveryStatus = "completed" | "incomplete";
 export type DiagnosticSeverity = "warning" | "error";
@@ -91,4 +93,105 @@ export interface RepositoryProjectDiscovery {
 export interface DiscoverTypeScriptProjectsOptions {
   repositoryRoot: string;
   repositoryId: string;
+}
+
+export type CompilerDiagnosticCategory =
+  "warning" | "error" | "suggestion" | "message";
+
+export type CompilerDiagnosticPhase =
+  "configuration" | "options" | "global" | "syntactic" | "semantic";
+
+export interface CompilerDiagnostic {
+  id: string;
+  repositoryId: string;
+  revision: string;
+  projectId: string;
+  phase: CompilerDiagnosticPhase;
+  code: number;
+  category: CompilerDiagnosticCategory;
+  summary: string;
+  path?: string;
+  line?: number;
+  column?: number;
+}
+
+export type ModuleReferenceKind =
+  "import" | "export" | "import_equals" | "require" | "dynamic_import";
+
+export type ModuleResolutionStatus =
+  "resolved_internal" | "resolved_external" | "unresolved" | "dynamic";
+
+export interface ModuleReference {
+  id: string;
+  repositoryId: string;
+  revision: string;
+  projectId: string;
+  fromPath: string;
+  kind: ModuleReferenceKind;
+  typeOnly: boolean;
+  resolution: ModuleResolutionStatus;
+  line: number;
+  column: number;
+  specifier?: string;
+  resolvedPath?: string;
+  externalPackage?: string;
+}
+
+export type CompilerGapType =
+  | "configuration_failure"
+  | "parse_failure"
+  | "type_check_failure"
+  | "unresolved_module"
+  | "dynamic_import";
+
+export interface CompilerGap {
+  id: string;
+  repositoryId: string;
+  revision: string;
+  projectId?: string;
+  type: CompilerGapType;
+  blockingRelevance: "required";
+  summary: string;
+  path?: string;
+  line?: number;
+  column?: number;
+  diagnosticIds?: string[];
+  moduleReferenceId?: string;
+}
+
+export interface CompilerProjectAnalysis {
+  projectId: string;
+  configPath: string;
+  rootFileCount: number;
+  loadedSourceFileCount: number;
+  diagnosticCount: number;
+  moduleReferenceCount: number;
+  gapCount: number;
+  status: DiscoveryStatus;
+}
+
+export interface TypeScriptCompilerAnalysis {
+  schemaVersion: "1.0.0";
+  repositoryId: string;
+  revision: string;
+  compilerVersion: string;
+  discoveryStatus: DiscoveryStatus;
+  projects: CompilerProjectAnalysis[];
+  diagnostics: CompilerDiagnostic[];
+  moduleReferences: ModuleReference[];
+  gaps: CompilerGap[];
+  status: DiscoveryStatus;
+}
+
+export interface CreateTypeScriptCompilerSessionOptions {
+  repositoryRoot: string;
+  repositoryId: string;
+  revision: string;
+  discovery?: RepositoryProjectDiscovery;
+}
+
+export interface TypeScriptCompilerSession {
+  discovery: RepositoryProjectDiscovery;
+  analysis: TypeScriptCompilerAnalysis;
+  getProgram(projectId: string): Program | undefined;
 }
