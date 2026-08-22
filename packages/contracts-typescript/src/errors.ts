@@ -1,7 +1,9 @@
 export type TypeScriptDiscoveryErrorCode =
   | "repository_unreadable"
   | "repository_path_invalid"
-  | "repository_identity_invalid";
+  | "repository_identity_invalid"
+  | "revision_invalid"
+  | "discovery_identity_mismatch";
 
 export class TypeScriptDiscoveryError extends Error {
   readonly code: TypeScriptDiscoveryErrorCode;
