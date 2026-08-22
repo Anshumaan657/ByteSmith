@@ -203,7 +203,7 @@ next slice begins.
 - Phase 3B: complete and merged.
 - Phase 3C: complete and merged.
 - Phase 3D: complete and merged.
-- Phase 3E: implemented on its review branch; approval and merge pending.
+- Phase 3E: complete and merged.
 
 Phase 3E now connects exact Git resolution, normalized diff, exhaustive
 inventory, revision-bound evidence, canonical IR, Impact Manifest construction,
@@ -217,6 +217,32 @@ are required to agree semantically.
 
 Build the Compiler API engine that understands supported TypeScript and
 JavaScript repositories without guessing about unsupported behavior.
+
+## Delivery slices
+
+Phase 4 is delivered and reviewed through five independently merged slices:
+
+1. **Phase 4A — Project, workspace, and configuration discovery.** TypeScript
+   and JavaScript configuration parsing, source membership, project references,
+   npm/pnpm/Yarn workspaces, path aliases, and package boundaries.
+2. **Phase 4B — Compiler host, parsing, and module resolution.** Revision-bound
+   Compiler API programs, diagnostics, supported module resolution, and explicit
+   unresolved-module gaps.
+3. **Phase 4C — Symbols, exports, and public signatures.** Analyzer-neutral
+   symbol and contract IR for supported declarations and public surfaces.
+4. **Phase 4D — References, calls, and cross-revision identity.** Direct
+   relationships plus safe matching of equivalent base/head symbols.
+5. **Phase 4E — Deterministic analyzer integration.** Failure containment,
+   resource limits, clean/incremental agreement, canonical manifest integration,
+   performance fixtures, and relevant ChangeBench verification.
+
+Each slice must pass the repository quality gate and merge to `main` before the
+next slice begins.
+
+## Phase 4 delivery status
+
+- Phase 4A: implemented on its review branch; approval and merge pending.
+- Phases 4B–4E: not started.
 
 ## Deliverables
 
