@@ -1,2 +1,3 @@
-// Compiler API analysis and TypeScript contract rules are implemented in dedicated phases.
-export {};
+export * from "./discovery.js";
+export * from "./errors.js";
+export type * from "./types.js";
