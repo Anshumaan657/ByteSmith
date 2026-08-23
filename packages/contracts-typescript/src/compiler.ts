@@ -11,6 +11,7 @@ import {
 import { discoverTypeScriptProjects } from "./discovery.js";
 import { TypeScriptDiscoveryError } from "./errors.js";
 import { resolveRepositoryRoot, toRepositoryPath } from "./path.js";
+import { analyzeProjectRelationships } from "./relationships.js";
 import { analyzePackageExports, analyzeProjectSymbols } from "./symbols.js";
 import type {
   CompilerDiagnostic,
@@ -25,8 +26,10 @@ import type {
   RepositoryProjectDiscovery,
   TypeScriptContract,
   TypeScriptExport,
+  TypeScriptImportBinding,
   TypeScriptCompilerSession,
   TypeScriptProject,
+  TypeScriptRelationship,
   TypeScriptSymbol,
 } from "./types.js";
 
@@ -42,8 +45,12 @@ interface ProjectResult {
   symbols: TypeScriptSymbol[];
   contracts: TypeScriptContract[];
   exports: TypeScriptExport[];
+  importBindings: TypeScriptImportBinding[];
+  relationships: TypeScriptRelationship[];
   gaps: CompilerGap[];
   program: ts.Program;
+  project: TypeScriptProject;
+  symbolBindings: ReadonlyMap<ts.Symbol, TypeScriptSymbol>;
 }
 
 const builtins = new Set(
@@ -581,11 +588,15 @@ function analyzeProject(
       : "completed";
   return {
     program,
+    project,
+    symbolBindings: semantics.symbolBindings,
     diagnostics,
     moduleReferences: modules.references,
     symbols: semantics.symbols,
     contracts: semantics.contracts,
     exports: semantics.exports,
+    importBindings: [],
+    relationships: [],
     gaps,
     summary: {
       projectId: project.id,
@@ -597,6 +608,8 @@ function analyzeProject(
       symbolCount: semantics.symbols.length,
       contractCount: semantics.contracts.length,
       exportCount: semantics.exports.length,
+      importBindingCount: 0,
+      relationshipCount: 0,
       gapCount: gaps.length,
       status,
     },
@@ -689,6 +702,36 @@ export async function createTypeScriptCompilerSession(
   const exports = uniqueById(results.flatMap((result) => result.exports)).sort(
     compareLocated,
   );
+  for (const result of results) {
+    const relationshipAnalysis = analyzeProjectRelationships(
+      repositoryRoot,
+      repositoryId,
+      revision,
+      result.project,
+      result.program,
+      result.symbolBindings,
+      symbols,
+      result.moduleReferences,
+    );
+    result.importBindings = relationshipAnalysis.importBindings;
+    result.relationships = relationshipAnalysis.relationships;
+    result.gaps = uniqueById([
+      ...result.gaps,
+      ...relationshipAnalysis.gaps,
+    ]).sort(compareLocated);
+    result.summary.importBindingCount = result.importBindings.length;
+    result.summary.relationshipCount = result.relationships.length;
+    result.summary.gapCount = result.gaps.length;
+    if (relationshipAnalysis.gaps.length > 0) {
+      result.summary.status = "incomplete";
+    }
+  }
+  const importBindings = uniqueById(
+    results.flatMap((result) => result.importBindings),
+  ).sort(compareLocated);
+  const relationships = uniqueById(
+    results.flatMap((result) => result.relationships),
+  ).sort(compareLocated);
   const packageAnalysis = analyzePackageExports(
     repositoryId,
     revision,
@@ -721,6 +764,8 @@ export async function createTypeScriptCompilerSession(
       contracts,
       exports,
       packageExports: packageAnalysis.exports,
+      importBindings,
+      relationships,
       gaps,
       status,
     },
