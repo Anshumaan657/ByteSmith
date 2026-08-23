@@ -11,6 +11,7 @@ import {
 import { discoverTypeScriptProjects } from "./discovery.js";
 import { TypeScriptDiscoveryError } from "./errors.js";
 import { resolveRepositoryRoot, toRepositoryPath } from "./path.js";
+import { analyzePackageExports, analyzeProjectSymbols } from "./symbols.js";
 import type {
   CompilerDiagnostic,
   CompilerDiagnosticCategory,
@@ -22,8 +23,11 @@ import type {
   ModuleReference,
   ModuleReferenceKind,
   RepositoryProjectDiscovery,
+  TypeScriptContract,
+  TypeScriptExport,
   TypeScriptCompilerSession,
   TypeScriptProject,
+  TypeScriptSymbol,
 } from "./types.js";
 
 interface ParsedProject {
@@ -35,6 +39,9 @@ interface ProjectResult {
   summary: CompilerProjectAnalysis;
   diagnostics: CompilerDiagnostic[];
   moduleReferences: ModuleReference[];
+  symbols: TypeScriptSymbol[];
+  contracts: TypeScriptContract[];
+  exports: TypeScriptExport[];
   gaps: CompilerGap[];
   program: ts.Program;
 }
@@ -543,11 +550,19 @@ function analyzeProject(
     host,
     parsed.options,
   );
+  const semantics = analyzeProjectSymbols(
+    repositoryRoot,
+    repositoryId,
+    revision,
+    project,
+    program,
+  );
   const gaps = uniqueById([
     ...diagnostics
       .map((diagnostic) => diagnosticGap(repositoryId, revision, diagnostic))
       .filter((gap): gap is CompilerGap => gap !== undefined),
     ...modules.gaps,
+    ...semantics.gaps,
   ]).sort(compareLocated);
   const loadedSourceFileCount = program
     .getSourceFiles()
@@ -568,6 +583,9 @@ function analyzeProject(
     program,
     diagnostics,
     moduleReferences: modules.references,
+    symbols: semantics.symbols,
+    contracts: semantics.contracts,
+    exports: semantics.exports,
     gaps,
     summary: {
       projectId: project.id,
@@ -576,6 +594,9 @@ function analyzeProject(
       loadedSourceFileCount,
       diagnosticCount: diagnostics.length,
       moduleReferenceCount: modules.references.length,
+      symbolCount: semantics.symbols.length,
+      contractCount: semantics.contracts.length,
+      exportCount: semantics.exports.length,
       gapCount: gaps.length,
       status,
     },
@@ -659,9 +680,24 @@ export async function createTypeScriptCompilerSession(
   const moduleReferences = uniqueById(
     results.flatMap((result) => result.moduleReferences),
   ).sort(compareLocated);
+  const symbols = uniqueById(results.flatMap((result) => result.symbols)).sort(
+    compareLocated,
+  );
+  const contracts = uniqueById(
+    results.flatMap((result) => result.contracts),
+  ).sort((left, right) => compareCodePoints(left.id, right.id));
+  const exports = uniqueById(results.flatMap((result) => result.exports)).sort(
+    compareLocated,
+  );
+  const packageAnalysis = analyzePackageExports(
+    repositoryId,
+    revision,
+    discovery,
+  );
   const gaps = uniqueById([
     ...discoveryGaps(repositoryId, revision, discovery),
     ...results.flatMap((result) => result.gaps),
+    ...packageAnalysis.gaps,
   ]).sort(compareLocated);
   const projects = results.map((result) => result.summary);
   const status =
@@ -681,6 +717,10 @@ export async function createTypeScriptCompilerSession(
       projects,
       diagnostics,
       moduleReferences,
+      symbols,
+      contracts,
+      exports,
+      packageExports: packageAnalysis.exports,
       gaps,
       status,
     },

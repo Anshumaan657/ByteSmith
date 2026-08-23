@@ -242,8 +242,9 @@ next slice begins.
 ## Phase 4 delivery status
 
 - Phase 4A: complete and merged.
-- Phase 4B: implemented on its review branch; approval and merge pending.
-- Phases 4C–4E: not started.
+- Phase 4B: complete and merged.
+- Phase 4C: implemented on its review branch; approval and merge pending.
+- Phases 4D–4E: not started.
 
 ## Deliverables
 
