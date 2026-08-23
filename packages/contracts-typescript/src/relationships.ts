@@ -149,6 +149,12 @@ function declarationIdentity(
     ts.isMethodDeclaration(declaration) ||
     ts.isMethodSignature(declaration)
   ) {
+    if (
+      !ts.isClassDeclaration(declaration.parent) &&
+      !ts.isInterfaceDeclaration(declaration.parent)
+    ) {
+      return undefined;
+    }
     name = declarationName(declaration.name);
     kind = "method";
   } else if (
@@ -157,6 +163,12 @@ function declarationIdentity(
     ts.isGetAccessorDeclaration(declaration) ||
     ts.isSetAccessorDeclaration(declaration)
   ) {
+    if (
+      !ts.isClassDeclaration(declaration.parent) &&
+      !ts.isInterfaceDeclaration(declaration.parent)
+    ) {
+      return undefined;
+    }
     name = declarationName(declaration.name);
     kind = "field";
   }

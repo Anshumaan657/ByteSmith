@@ -507,6 +507,126 @@ function collectModuleReferences(
   };
 }
 
+function runtimeBoundaryGaps(
+  repositoryRoot: string,
+  repositoryId: string,
+  revision: string,
+  project: TypeScriptProject,
+  program: ts.Program,
+): CompilerGap[] {
+  const sourcePaths = new Set(project.sourceFiles);
+  const gaps: CompilerGap[] = [];
+  const add = (
+    sourceFile: ts.SourceFile,
+    path: string,
+    node: ts.Node,
+    type: Extract<
+      CompilerGapType,
+      "reflection" | "complex_dependency_injection" | "generated_code"
+    >,
+    summary: string,
+  ): void => {
+    const location = sourceLocation(sourceFile, node);
+    gaps.push({
+      id: stableId("typescript-gap", {
+        repositoryId,
+        revision,
+        projectId: project.id,
+        type,
+        path,
+        ...location,
+      }),
+      repositoryId,
+      revision,
+      projectId: project.id,
+      type,
+      blockingRelevance: "required",
+      summary,
+      path,
+      ...location,
+    });
+  };
+
+  for (const sourceFile of program.getSourceFiles()) {
+    const repositoryPath = toRepositoryPath(
+      repositoryRoot,
+      realPath(sourceFile.fileName),
+    );
+    if (!repositoryPath || !sourcePaths.has(repositoryPath)) continue;
+    if (
+      /(?:^|[/._-])generated(?:[._-]|$)/iu.test(repositoryPath) ||
+      /(?:@generated|code generated|auto-generated|automatically generated)/iu.test(
+        sourceFile.text.slice(0, 1_024),
+      )
+    ) {
+      add(
+        sourceFile,
+        repositoryPath,
+        sourceFile,
+        "generated_code",
+        "Generated TypeScript or JavaScript is retained as an explicit unknown because its source contract may live outside this snapshot.",
+      );
+    }
+    const visit = (node: ts.Node): void => {
+      if (ts.isCallExpression(node)) {
+        const expression = node.expression;
+        const reflection =
+          (ts.isIdentifier(expression) && expression.text === "eval") ||
+          (ts.isPropertyAccessExpression(expression) &&
+            ts.isIdentifier(expression.expression) &&
+            expression.expression.text === "Reflect");
+        if (reflection) {
+          add(
+            sourceFile,
+            repositoryPath,
+            node,
+            "reflection",
+            "Runtime reflection cannot be converted into an authoritative static relationship.",
+          );
+        }
+        if (
+          ts.isPropertyAccessExpression(expression) &&
+          ts.isIdentifier(expression.expression) &&
+          expression.expression.text === "container" &&
+          ["get", "resolve"].includes(expression.name.text)
+        ) {
+          add(
+            sourceFile,
+            repositoryPath,
+            node,
+            "complex_dependency_injection",
+            "Runtime dependency-injection container resolution cannot be linked to one authoritative declaration.",
+          );
+        }
+      }
+      if (ts.canHaveDecorators(node)) {
+        for (const decorator of ts.getDecorators(node) ?? []) {
+          const expression = ts.isCallExpression(decorator.expression)
+            ? decorator.expression.expression
+            : decorator.expression;
+          const name = ts.isIdentifier(expression)
+            ? expression.text
+            : ts.isPropertyAccessExpression(expression)
+              ? expression.name.text
+              : undefined;
+          if (name && ["Inject", "Injectable", "Autowired"].includes(name)) {
+            add(
+              sourceFile,
+              repositoryPath,
+              decorator,
+              "complex_dependency_injection",
+              "Decorator-driven dependency injection cannot be linked to one authoritative runtime implementation.",
+            );
+          }
+        }
+      }
+      ts.forEachChild(node, visit);
+    };
+    visit(sourceFile);
+  }
+  return uniqueById(gaps).sort(compareLocated);
+}
+
 function analyzeProject(
   repositoryRoot: string,
   repositoryId: string,
@@ -557,6 +677,13 @@ function analyzeProject(
     host,
     parsed.options,
   );
+  const runtimeGaps = runtimeBoundaryGaps(
+    repositoryRoot,
+    repositoryId,
+    revision,
+    project,
+    program,
+  );
   const semantics = analyzeProjectSymbols(
     repositoryRoot,
     repositoryId,
@@ -569,6 +696,7 @@ function analyzeProject(
       .map((diagnostic) => diagnosticGap(repositoryId, revision, diagnostic))
       .filter((gap): gap is CompilerGap => gap !== undefined),
     ...modules.gaps,
+    ...runtimeGaps,
     ...semantics.gaps,
   ]).sort(compareLocated);
   const loadedSourceFileCount = program
@@ -601,6 +729,7 @@ function analyzeProject(
     summary: {
       projectId: project.id,
       configPath: project.configPath,
+      sourceFiles: [...project.sourceFiles],
       rootFileCount: rootNames.length,
       loadedSourceFileCount,
       diagnosticCount: diagnostics.length,

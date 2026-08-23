@@ -244,8 +244,16 @@ next slice begins.
 - Phase 4A: complete and merged.
 - Phase 4B: complete and merged.
 - Phase 4C: complete and merged.
-- Phase 4D: implemented on its review branch; approval and merge pending.
-- Phase 4E: not started.
+- Phase 4D: complete and merged.
+- Phase 4E: implemented on its review branch; approval and merge pending.
+
+Phase 4E now exposes one bounded base/head analyzer entry point. It verifies
+exact revision identities and immutable snapshot digests, runs compiler work in
+a memory-bounded worker, terminates on timeout, projects all supported facts and
+required gaps into canonical IR, and returns manifest-ready analyzer, evidence,
+and unknown records. Exact validated incremental snapshots reuse prior semantic
+output; stale or corrupted snapshots run clean. Runtime duration never changes
+the canonical IR digest.
 
 ## Deliverables
 
