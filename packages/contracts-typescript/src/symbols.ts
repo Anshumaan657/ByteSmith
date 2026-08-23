@@ -26,6 +26,7 @@ export interface ProjectSymbolAnalysis {
   contracts: TypeScriptContract[];
   exports: TypeScriptExport[];
   gaps: CompilerGap[];
+  symbolBindings: ReadonlyMap<ts.Symbol, TypeScriptSymbol>;
 }
 
 export interface PackageExportAnalysis {
@@ -824,6 +825,7 @@ export function analyzeProjectSymbols(
     ),
     exports: exportRecords.sort(compareLocated),
     gaps: gaps.sort(compareLocated),
+    symbolBindings: symbolRecords,
   };
 }
 

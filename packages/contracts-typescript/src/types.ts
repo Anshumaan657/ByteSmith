@@ -143,7 +143,8 @@ export type CompilerGapType =
   | "type_check_failure"
   | "unresolved_module"
   | "dynamic_import"
-  | "unsupported_signature";
+  | "unsupported_signature"
+  | "unresolved_symbol";
 
 export interface CompilerGap {
   id: string;
@@ -159,6 +160,7 @@ export interface CompilerGap {
   diagnosticIds?: string[];
   moduleReferenceId?: string;
   symbolId?: string;
+  relationshipId?: string;
 }
 
 export type TypeScriptSymbolKind =
@@ -275,6 +277,78 @@ export interface TypeScriptPackageExport {
   target: string | null;
 }
 
+export type TypeScriptImportKind =
+  "default" | "named" | "namespace" | "import_equals";
+
+export interface TypeScriptImportBinding {
+  id: string;
+  repositoryId: string;
+  revision: string;
+  projectId: string;
+  sourcePath: string;
+  localName: string;
+  importedName: string;
+  kind: TypeScriptImportKind;
+  typeOnly: boolean;
+  resolution: ModuleResolutionStatus;
+  line: number;
+  column: number;
+  moduleReferenceId?: string;
+  targetPath?: string;
+  targetSymbolId?: string;
+}
+
+export type TypeScriptRelationshipKind = "reference" | "call";
+
+export interface TypeScriptRelationship {
+  id: string;
+  repositoryId: string;
+  revision: string;
+  projectId: string;
+  kind: TypeScriptRelationshipKind;
+  authority: "authoritative";
+  fromPath: string;
+  toPath: string;
+  toName: string;
+  toSymbolId: string;
+  line: number;
+  column: number;
+  endLine: number;
+  endColumn: number;
+  fromSymbolId?: string;
+}
+
+export type SymbolMatchBasis =
+  "project_path_qualified_name" | "unique_qualified_name";
+
+export interface CrossRevisionSymbolMatch {
+  id: string;
+  logicalId: string;
+  repositoryId: string;
+  baseRevision: string;
+  headRevision: string;
+  baseSymbolId: string;
+  headSymbolId: string;
+  basis: SymbolMatchBasis;
+  moved: boolean;
+  signatureChanged: boolean;
+}
+
+export interface UnmatchedTypeScriptSymbol {
+  symbolId: string;
+  side: "base" | "head";
+  reason: "removed" | "added" | "ambiguous";
+}
+
+export interface CrossRevisionSymbolAnalysis {
+  schemaVersion: "1.0.0";
+  repositoryId: string;
+  baseRevision: string;
+  headRevision: string;
+  matches: CrossRevisionSymbolMatch[];
+  unmatched: UnmatchedTypeScriptSymbol[];
+}
+
 export interface CompilerProjectAnalysis {
   projectId: string;
   configPath: string;
@@ -285,6 +359,8 @@ export interface CompilerProjectAnalysis {
   symbolCount: number;
   contractCount: number;
   exportCount: number;
+  importBindingCount: number;
+  relationshipCount: number;
   gapCount: number;
   status: DiscoveryStatus;
 }
@@ -302,6 +378,8 @@ export interface TypeScriptCompilerAnalysis {
   contracts: TypeScriptContract[];
   exports: TypeScriptExport[];
   packageExports: TypeScriptPackageExport[];
+  importBindings: TypeScriptImportBinding[];
+  relationships: TypeScriptRelationship[];
   gaps: CompilerGap[];
   status: DiscoveryStatus;
 }
