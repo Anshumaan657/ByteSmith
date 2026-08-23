@@ -142,7 +142,8 @@ export type CompilerGapType =
   | "parse_failure"
   | "type_check_failure"
   | "unresolved_module"
-  | "dynamic_import";
+  | "dynamic_import"
+  | "unsupported_signature";
 
 export interface CompilerGap {
   id: string;
@@ -157,6 +158,121 @@ export interface CompilerGap {
   column?: number;
   diagnosticIds?: string[];
   moduleReferenceId?: string;
+  symbolId?: string;
+}
+
+export type TypeScriptSymbolKind =
+  | "function"
+  | "method"
+  | "interface"
+  | "field"
+  | "type_alias"
+  | "class"
+  | "variable";
+
+export type TypeScriptVisibility = "public" | "protected" | "private";
+
+export interface TypeScriptSymbol {
+  id: string;
+  repositoryId: string;
+  revision: string;
+  projectId: string;
+  path: string;
+  name: string;
+  qualifiedName: string;
+  kind: TypeScriptSymbolKind;
+  exported: boolean;
+  defaultExport: boolean;
+  ambient: boolean;
+  visibility: TypeScriptVisibility;
+  static: boolean;
+  readonly: boolean;
+  optional: boolean;
+  line: number;
+  column: number;
+  endLine: number;
+  endColumn: number;
+  parentSymbolId?: string;
+}
+
+export interface TypeParameterSignature {
+  name: string;
+  constraint?: string;
+  default?: string;
+}
+
+export interface ParameterSignature {
+  name: string;
+  type: string;
+  optional: boolean;
+  rest: boolean;
+}
+
+export interface CallableSignature {
+  typeParameters: TypeParameterSignature[];
+  parameters: ParameterSignature[];
+  returnType: string;
+}
+
+export interface TypeMemberSignature {
+  name: string;
+  kind: "field" | "method";
+  type: string;
+  optional: boolean;
+  readonly: boolean;
+  static: boolean;
+  visibility: TypeScriptVisibility;
+  signatures: CallableSignature[];
+}
+
+export type TypeScriptContractKind =
+  "function_signature" | "type_shape" | "variable_type";
+
+export interface TypeScriptContract {
+  id: string;
+  repositoryId: string;
+  revision: string;
+  projectId: string;
+  symbolId: string;
+  name: string;
+  kind: TypeScriptContractKind;
+  exported: boolean;
+  canonicalSignature: string;
+  fingerprint: string;
+  typeParameters: TypeParameterSignature[];
+  signatures: CallableSignature[];
+  members: TypeMemberSignature[];
+  heritage: string[];
+  aliasedType?: string;
+  valueType?: string;
+}
+
+export type TypeScriptExportKind = "local" | "re_export" | "default";
+
+export interface TypeScriptExport {
+  id: string;
+  repositoryId: string;
+  revision: string;
+  projectId: string;
+  sourcePath: string;
+  exportName: string;
+  targetName: string;
+  kind: TypeScriptExportKind;
+  typeOnly: boolean;
+  targetPath?: string;
+  targetSymbolId?: string;
+  packageId?: string;
+}
+
+export interface TypeScriptPackageExport {
+  id: string;
+  repositoryId: string;
+  revision: string;
+  packageId: string;
+  packageName?: string;
+  subpath: string;
+  conditions: string[];
+  target: string | null;
 }
 
 export interface CompilerProjectAnalysis {
@@ -166,6 +282,9 @@ export interface CompilerProjectAnalysis {
   loadedSourceFileCount: number;
   diagnosticCount: number;
   moduleReferenceCount: number;
+  symbolCount: number;
+  contractCount: number;
+  exportCount: number;
   gapCount: number;
   status: DiscoveryStatus;
 }
@@ -179,6 +298,10 @@ export interface TypeScriptCompilerAnalysis {
   projects: CompilerProjectAnalysis[];
   diagnostics: CompilerDiagnostic[];
   moduleReferences: ModuleReference[];
+  symbols: TypeScriptSymbol[];
+  contracts: TypeScriptContract[];
+  exports: TypeScriptExport[];
+  packageExports: TypeScriptPackageExport[];
   gaps: CompilerGap[];
   status: DiscoveryStatus;
 }
