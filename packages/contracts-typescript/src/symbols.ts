@@ -938,6 +938,7 @@ export function analyzePackageExports(
         repositoryId,
         revision,
         packageId: workspacePackage.id,
+        manifestPath: workspacePackage.manifestPath,
         ...(workspacePackage.name
           ? { packageName: workspacePackage.name }
           : {}),

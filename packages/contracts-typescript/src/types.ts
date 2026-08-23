@@ -1,4 +1,10 @@
 import type { Program } from "typescript";
+import type { CanonicalIr } from "@bytesmith/ir";
+import type {
+  ManifestAnalyzer,
+  ManifestUnknown,
+} from "@bytesmith/impact-manifest";
+import type { Evidence } from "@bytesmith/impact-types";
 
 export type WorkspaceManager = "npm" | "pnpm" | "yarn" | "none";
 export type DiscoveryStatus = "completed" | "incomplete";
@@ -143,6 +149,9 @@ export type CompilerGapType =
   | "type_check_failure"
   | "unresolved_module"
   | "dynamic_import"
+  | "reflection"
+  | "complex_dependency_injection"
+  | "generated_code"
   | "unsupported_signature"
   | "unresolved_symbol";
 
@@ -271,6 +280,7 @@ export interface TypeScriptPackageExport {
   repositoryId: string;
   revision: string;
   packageId: string;
+  manifestPath: string;
   packageName?: string;
   subpath: string;
   conditions: string[];
@@ -352,6 +362,7 @@ export interface CrossRevisionSymbolAnalysis {
 export interface CompilerProjectAnalysis {
   projectId: string;
   configPath: string;
+  sourceFiles: string[];
   rootFileCount: number;
   loadedSourceFileCount: number;
   diagnosticCount: number;
@@ -395,4 +406,62 @@ export interface TypeScriptCompilerSession {
   discovery: RepositoryProjectDiscovery;
   analysis: TypeScriptCompilerAnalysis;
   getProgram(projectId: string): Program | undefined;
+}
+
+export interface TypeScriptAnalyzerLimits {
+  timeoutMs: number;
+  maxOldGenerationSizeMb: number;
+  maxProjects: number;
+  maxSourceFiles: number;
+  maxSymbols: number;
+  maxRelationships: number;
+  maxDiagnostics: number;
+}
+
+export interface TypeScriptAnalyzerSnapshot {
+  schemaVersion: "1.0.0";
+  configurationId: string;
+  repositoryId: string;
+  baseRevision: string;
+  headRevision: string;
+  baseSnapshotDigest: string;
+  headSnapshotDigest: string;
+  analyzerVersion: string;
+  baseAnalysis: TypeScriptCompilerAnalysis;
+  headAnalysis: TypeScriptCompilerAnalysis;
+  symbolAnalysis: CrossRevisionSymbolAnalysis;
+  ir: CanonicalIr;
+  semanticDigest: { algorithm: "sha256"; value: string };
+}
+
+export interface TypeScriptManifestProjection {
+  analyzer: ManifestAnalyzer;
+  evidence: Evidence[];
+  unknowns: ManifestUnknown[];
+}
+
+export type AnalyzerFailureKind =
+  "timeout" | "worker_crash" | "invalid_input" | "limit_exceeded";
+
+export interface TypeScriptAnalyzerRunResult {
+  schemaVersion: "1.0.0";
+  execution: "clean" | "incremental";
+  status: "completed" | "incomplete" | "error";
+  durationMs: number;
+  ir: CanonicalIr;
+  semanticDigest: { algorithm: "sha256"; value: string };
+  canonicalIr: string;
+  manifestProjection: TypeScriptManifestProjection;
+  diagnostics: string[];
+  failureKind?: AnalyzerFailureKind;
+  snapshot?: TypeScriptAnalyzerSnapshot;
+}
+
+export interface RunTypeScriptAnalyzerOptions {
+  repositoryId: string;
+  base: { directory: string; revision: string };
+  head: { directory: string; revision: string };
+  analyzerVersion?: string;
+  limits?: Partial<TypeScriptAnalyzerLimits>;
+  incrementalSeed?: TypeScriptAnalyzerSnapshot;
 }

@@ -8,6 +8,9 @@
   "include": ["src/**/*.ts"],
   "references": [
     { "path": "../impact-types" },
-    { "path": "../canonicalization" }
+    { "path": "../canonicalization" },
+    { "path": "../evidence" },
+    { "path": "../ir" },
+    { "path": "../impact-manifest" }
   ]
 }

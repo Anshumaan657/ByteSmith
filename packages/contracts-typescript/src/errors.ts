@@ -4,7 +4,8 @@ export type TypeScriptDiscoveryErrorCode =
   | "repository_identity_invalid"
   | "revision_invalid"
   | "discovery_identity_mismatch"
-  | "analysis_comparison_invalid";
+  | "analysis_comparison_invalid"
+  | "analyzer_options_invalid";
 
 export class TypeScriptDiscoveryError extends Error {
   readonly code: TypeScriptDiscoveryErrorCode;
