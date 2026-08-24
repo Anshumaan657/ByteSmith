@@ -8,5 +8,14 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@bytesmith/analyzer-sdk": "workspace:*",
+    "@bytesmith/canonicalization": "workspace:*",
+    "@bytesmith/evidence": "workspace:*",
+    "@bytesmith/impact-manifest": "workspace:*",
+    "@bytesmith/impact-types": "workspace:*",
+    "@bytesmith/ir": "workspace:*",
+    "yaml": "2.9.0"
+  }
 }

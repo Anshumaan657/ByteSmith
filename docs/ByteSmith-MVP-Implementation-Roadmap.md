@@ -288,7 +288,9 @@ families included in Verify 0.1.
 
 ## Delivery slices
 
-Phase 5 is delivered and reviewed through six independently merged slices:
+Phase 5 is divided into six reviewable slices. Phases 5D–5F are intentionally
+delivered together on one branch because discovery, operation rules, schema
+rules, and precision measurement form one inseparable OpenAPI execution path:
 
 1. **Phase 5A — Shared contract-rule foundation.** Analyzer-neutral contract
    matching, versioned advisory rule registration, deterministic execution,
@@ -307,17 +309,17 @@ Phase 5 is delivered and reviewed through six independently merged slices:
    response fields, types, requiredness, enums, unified execution, and
    ChangeBench precision measurement.
 
-Each slice must pass the repository quality gate and merge to `main` before the
-next slice begins.
+Every delivered group must pass the repository quality gate before merge.
 
 ## Phase 5 delivery status
 
 - Phase 5A: completed and merged through pull request #14.
 - Phase 5B: completed and merged through pull request #16.
-- Phase 5C: implemented on its review branch; approval and merge pending.
-- Phase 5D: not started.
-- Phase 5E: not started.
-- Phase 5F: not started.
+- Phase 5C: completed and merged through pull request #17.
+- Phase 5D: implemented on the combined Phase 5D–5F review branch.
+- Phase 5E: implemented on the combined Phase 5D–5F review branch.
+- Phase 5F: implemented on the combined Phase 5D–5F review branch; approval and
+  merge pending.
 
 ## TypeScript rules
 
@@ -358,6 +360,15 @@ conclusion advisory and revision-bound.
 - Optional field made required
 - Enum value removed
 - Explicit unsupported/ambiguous schema constructs
+
+Phases 5D–5F discover repository-owned OpenAPI 3.0 and 3.1 JSON/YAML documents,
+resolve local JSON Pointer references, and project operations plus component and
+inline payload schemas into canonical IR. Nine versioned required rules cover
+unsupported constructs, route and method removal, parameters, request bodies,
+schema fields, types, requiredness, and enum contraction. External, unresolved,
+recursive, composed, and otherwise unsupported schemas remain visible required
+unknowns. The two OpenAPI ChangeBench contract fixtures produce exactly their
+expected changes with 100% preliminary precision.
 
 ## Exit gate
 

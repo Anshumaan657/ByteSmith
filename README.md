@@ -23,9 +23,13 @@ local state in SQLite and the filesystem, and never blocks a pull request.
 
 - Phase 0 safety specifications, schemas, ADRs, fixtures, and validation are
   complete.
-- Phase 1 establishes the MVP-only pnpm/TypeScript workspace and CI foundation.
-- Production analyzers and user-facing commands remain intentionally
-  unimplemented until their benchmark and input foundations are complete.
+- Phases 1–3 establish the MVP workspace, ChangeBench suite, exact Git inputs,
+  evidence, and canonical IR.
+- Phase 4 provides deterministic TypeScript/JavaScript semantic analysis.
+- Phase 5 TypeScript rules are merged; the combined OpenAPI discovery and
+  compatibility slice is under review.
+- Consumer linkage, test intelligence, CLI, storage, and GitHub Action work
+  remain intentionally deferred to Phases 6–8.
 
 ## Requirements
 
