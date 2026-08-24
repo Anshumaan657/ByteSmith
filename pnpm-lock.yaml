@@ -79,6 +79,9 @@ importers:
 
   packages/contracts-typescript:
     dependencies:
+      '@bytesmith/analyzer-sdk':
+        specifier: workspace:*
+        version: link:../analyzer-sdk
       '@bytesmith/canonicalization':
         specifier: workspace:*
         version: link:../canonicalization

@@ -312,8 +312,8 @@ next slice begins.
 
 ## Phase 5 delivery status
 
-- Phase 5A: implemented on its review branch; approval and merge pending.
-- Phase 5B: not started.
+- Phase 5A: completed and merged through pull request #14.
+- Phase 5B: implemented on its review branch; approval and merge pending.
 - Phase 5C: not started.
 - Phase 5D: not started.
 - Phase 5E: not started.
@@ -331,6 +331,14 @@ next slice begins.
 - Exported type alias changed incompatibly
 - Package export removed
 - Evidence attached to the base/head declaration and rule version
+
+Phase 5B delivers the callable subset through five versioned rules covering
+exported callable identity, overloads, parameters, generic constraints, and
+return/async contracts. Simple primitive, literal, and union relationships are
+classified with direction-aware parameter and return variance. Complex types
+or non-unique overload correspondence remain explicit required unknowns rather
+than inferred breakages. The rules consume Phase 4 revision-bound contracts and
+execute through the advisory-only Phase 5A registry.
 
 ## OpenAPI rules
 
