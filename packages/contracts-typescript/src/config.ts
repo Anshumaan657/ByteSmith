@@ -353,6 +353,7 @@ export function discoverProjectConfiguration(
     configPath: configRepositoryPath,
     configKind,
     ...(owner ? { packageId: owner.id } : {}),
+    ...(owner?.name ? { packageName: owner.name } : {}),
     language: sourceLanguage(sourceFiles),
     sourceFiles,
     projectReferences,

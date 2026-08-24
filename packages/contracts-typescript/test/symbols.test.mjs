@@ -180,6 +180,9 @@ test("public symbols, signatures, shapes, re-exports, and package exports are st
     ],
   );
 
+  const userId = contractNamed(analysis, "UserId");
+  assert.equal(userId.aliasedType, "string | number");
+
   const publicModel = analysis.exports.find(
     (item) => item.exportName === "PublicModel",
   );

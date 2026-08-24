@@ -313,8 +313,8 @@ next slice begins.
 ## Phase 5 delivery status
 
 - Phase 5A: completed and merged through pull request #14.
-- Phase 5B: implemented on its review branch; approval and merge pending.
-- Phase 5C: not started.
+- Phase 5B: completed and merged through pull request #16.
+- Phase 5C: implemented on its review branch; approval and merge pending.
 - Phase 5D: not started.
 - Phase 5E: not started.
 - Phase 5F: not started.
@@ -339,6 +339,13 @@ classified with direction-aware parameter and return variance. Complex types
 or non-unique overload correspondence remain explicit required unknowns rather
 than inferred breakages. The rules consume Phase 4 revision-bound contracts and
 execute through the advisory-only Phase 5A registry.
+
+Phase 5C delivers exported structural declarations, public fields, type aliases,
+source-level re-exports, and package export-map entries through five additional
+versioned rules. It preserves syntax evidence even when a re-export target is
+unresolved, expands type-alias definitions canonically, distinguishes proven
+primitive/union changes from complex structural unknowns, and keeps every
+conclusion advisory and revision-bound.
 
 ## OpenAPI rules
 
