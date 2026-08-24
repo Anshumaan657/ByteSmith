@@ -1,4 +1,5 @@
 export * from "./compiler.js";
+export * from "./callable-rules.js";
 export * from "./discovery.js";
 export * from "./errors.js";
 export * from "./matching.js";

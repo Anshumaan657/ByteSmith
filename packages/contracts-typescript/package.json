@@ -10,6 +10,7 @@
     "dist"
   ],
   "dependencies": {
+    "@bytesmith/analyzer-sdk": "workspace:*",
     "@bytesmith/canonicalization": "workspace:*",
     "@bytesmith/evidence": "workspace:*",
     "@bytesmith/impact-manifest": "workspace:*",

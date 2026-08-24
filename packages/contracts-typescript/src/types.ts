@@ -1,10 +1,14 @@
 import type { Program } from "typescript";
+import type {
+  ContractComparison,
+  ContractRuleExecutionResult,
+} from "@bytesmith/analyzer-sdk";
 import type { CanonicalIr } from "@bytesmith/ir";
 import type {
   ManifestAnalyzer,
   ManifestUnknown,
 } from "@bytesmith/impact-manifest";
-import type { Evidence } from "@bytesmith/impact-types";
+import type { Evidence, SourceLocation } from "@bytesmith/impact-types";
 
 export type WorkspaceManager = "npm" | "pnpm" | "yarn" | "none";
 export type DiscoveryStatus = "completed" | "incomplete";
@@ -257,6 +261,32 @@ export interface TypeScriptContract {
   aliasedType?: string;
   valueType?: string;
 }
+
+export interface TypeScriptCallableContractValue {
+  symbolId: string;
+  contractId: string;
+  irSymbolId: string;
+  projectId: string;
+  path: string;
+  name: string;
+  qualifiedName: string;
+  kind: "function" | "method";
+  location: SourceLocation;
+  signatures: CallableSignature[];
+}
+
+export interface TypeScriptCallableRuleState {
+  comparisons: ContractComparison<TypeScriptCallableContractValue>[];
+}
+
+export interface EvaluateTypeScriptCallableRulesInput {
+  ir: CanonicalIr;
+  baseAnalysis: TypeScriptCompilerAnalysis;
+  headAnalysis: TypeScriptCompilerAnalysis;
+  symbolAnalysis?: CrossRevisionSymbolAnalysis;
+}
+
+export type TypeScriptCallableRuleResult = ContractRuleExecutionResult;
 
 export type TypeScriptExportKind = "local" | "re_export" | "default";
 
