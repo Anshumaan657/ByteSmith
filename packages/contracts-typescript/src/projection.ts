@@ -280,16 +280,22 @@ function projectRevision(
   }
 
   for (const exported of analysis.exports) {
-    if (!exported.targetSymbolId) continue;
     const from = files.get(fileKey(exported.revision, exported.sourcePath));
-    const to = irSymbols.get(exported.targetSymbolId);
-    if (!from || !to) continue;
+    if (!from) continue;
     const evidence = createEvidence(evidenceContext, {
       kind: "import",
       revision: exported.revision,
       path: exported.sourcePath,
-      summary: `Export ${exported.exportName} resolves to ${to.name}.`,
+      summary: exported.targetSymbolId
+        ? `Export ${exported.exportName} resolves to ${exported.targetName}.`
+        : `Export ${exported.exportName} has an unresolved target ${exported.targetName}.`,
     });
+    if (!exported.targetSymbolId) {
+      accumulator.evidence.push(evidence);
+      continue;
+    }
+    const to = irSymbols.get(exported.targetSymbolId);
+    if (!to) continue;
     addRelationship(
       exported.kind === "re_export" ? "re_exports" : "exports",
       from.id,

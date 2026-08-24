@@ -7,4 +7,5 @@ export * from "./pipeline.js";
 export * from "./projection.js";
 export * from "./relationships.js";
 export * from "./symbols.js";
+export * from "./structural-rules.js";
 export type * from "./types.js";

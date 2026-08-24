@@ -86,9 +86,10 @@ function normalizedTypeText(
   checker: ts.TypeChecker,
   type: ts.Type,
   location: ts.Node,
+  additionalFlags: ts.TypeFormatFlags = ts.TypeFormatFlags.None,
 ): string {
   return checker
-    .typeToString(type, location, typeFormatFlags)
+    .typeToString(type, location, typeFormatFlags | additionalFlags)
     .replaceAll(`${repositoryRoot}${path.sep}`, "")
     .replaceAll("\\", "/")
     .normalize("NFC");
@@ -392,6 +393,7 @@ function contractForSeed(
       checker,
       checker.getTypeFromTypeNode(node.type),
       node.type,
+      ts.TypeFormatFlags.InTypeAlias,
     );
   } else if (ts.isInterfaceDeclaration(node) || ts.isClassDeclaration(node)) {
     typeParameterValues = typeParameters(
@@ -721,6 +723,7 @@ export function analyzeProjectSymbols(
         compareCodePoints(left.getName(), right.getName()),
       );
     for (const exportedSymbol of moduleExports) {
+      const aliasedExport = (exportedSymbol.flags & ts.SymbolFlags.Alias) !== 0;
       const target = resolvedAlias(checker, exportedSymbol);
       const targetRecord =
         symbolRecords.get(target) ??
@@ -739,7 +742,7 @@ export function analyzeProjectSymbols(
       const kind =
         exportName === "default"
           ? "default"
-          : targetPath && targetPath !== sourcePath
+          : aliasedExport || (targetPath && targetPath !== sourcePath)
             ? "re_export"
             : "local";
       if (targetRecord) {
@@ -768,6 +771,7 @@ export function analyzeProjectSymbols(
         ...(targetPath && targetPath !== "." ? { targetPath } : {}),
         ...(targetRecord ? { targetSymbolId: targetRecord.id } : {}),
         ...(project.packageId ? { packageId: project.packageId } : {}),
+        ...(project.packageName ? { packageName: project.packageName } : {}),
       });
     }
   }

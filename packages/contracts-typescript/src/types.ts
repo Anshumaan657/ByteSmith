@@ -78,6 +78,7 @@ export interface TypeScriptProject {
   configPath: string;
   configKind: "tsconfig" | "jsconfig";
   packageId?: string;
+  packageName?: string;
   language: "typescript" | "javascript" | "mixed" | "empty";
   sourceFiles: string[];
   projectReferences: string[];
@@ -288,6 +289,76 @@ export interface EvaluateTypeScriptCallableRulesInput {
 
 export type TypeScriptCallableRuleResult = ContractRuleExecutionResult;
 
+export interface TypeScriptStructuralMemberValue {
+  name: string;
+  type: string;
+  optional: boolean;
+  readonly: boolean;
+  static: boolean;
+  irSymbolId: string;
+  location: SourceLocation;
+  evidenceIds: string[];
+}
+
+export interface TypeScriptStructuralContractValue {
+  symbolId: string;
+  contractId: string;
+  irSymbolId: string;
+  projectId: string;
+  path: string;
+  name: string;
+  qualifiedName: string;
+  kind: "interface" | "type_alias" | "class";
+  location: SourceLocation;
+  evidenceIds: string[];
+  members: TypeScriptStructuralMemberValue[];
+  typeParameters: TypeParameterSignature[];
+  heritage: string[];
+  aliasedType?: string;
+}
+
+export interface TypeScriptReExportValue {
+  id: string;
+  projectId: string;
+  sourcePath: string;
+  exportName: string;
+  targetName: string;
+  typeOnly: boolean;
+  packageId?: string;
+  packageName?: string;
+  targetPath?: string;
+  targetSymbolId?: string;
+  targetIrSymbolId?: string;
+  location: SourceLocation;
+}
+
+export interface TypeScriptPackageExportValue {
+  id: string;
+  packageId: string;
+  packageName?: string;
+  manifestPath: string;
+  subpath: string;
+  conditions: string[];
+  target: string | null;
+  irContractId: string;
+  location: SourceLocation;
+}
+
+export interface TypeScriptStructuralRuleState {
+  structures: ContractComparison<TypeScriptStructuralContractValue>[];
+  reExports: ContractComparison<TypeScriptReExportValue>[];
+  packageExports: ContractComparison<TypeScriptPackageExportValue>[];
+}
+
+export interface EvaluateTypeScriptStructuralRulesInput {
+  ir: CanonicalIr;
+  baseAnalysis: TypeScriptCompilerAnalysis;
+  headAnalysis: TypeScriptCompilerAnalysis;
+  symbolAnalysis?: CrossRevisionSymbolAnalysis;
+}
+
+export type TypeScriptStructuralRuleResult = ContractRuleExecutionResult;
+
 export type TypeScriptExportKind = "local" | "re_export" | "default";
 
 export interface TypeScriptExport {
@@ -303,6 +374,7 @@ export interface TypeScriptExport {
   targetPath?: string;
   targetSymbolId?: string;
   packageId?: string;
+  packageName?: string;
 }
 
 export interface TypeScriptPackageExport {
