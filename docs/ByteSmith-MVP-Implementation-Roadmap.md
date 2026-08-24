@@ -286,6 +286,39 @@ the canonical IR digest.
 Detect the highest-value breaking contract changes for the only two contract
 families included in Verify 0.1.
 
+## Delivery slices
+
+Phase 5 is delivered and reviewed through six independently merged slices:
+
+1. **Phase 5A — Shared contract-rule foundation.** Analyzer-neutral contract
+   matching, versioned advisory rule registration, deterministic execution,
+   evidence enforcement, manifest-ready changes, explicit ambiguity, and
+   failure containment.
+2. **Phase 5B — TypeScript callable rules.** Exported function and method
+   removal plus parameter, optionality, overload, and return-type compatibility.
+3. **Phase 5C — TypeScript structural and package rules.** Interfaces, fields,
+   type aliases, class public surfaces, re-exports, and package exports.
+4. **Phase 5D — OpenAPI discovery and canonical contracts.** JSON/YAML parsing,
+   version detection, local references, operations, schemas, and explicit
+   unsupported constructs.
+5. **Phase 5E — OpenAPI route and operation rules.** Route, method, parameter,
+   and request-body compatibility.
+6. **Phase 5F — OpenAPI schema rules and Phase 5 integration.** Request and
+   response fields, types, requiredness, enums, unified execution, and
+   ChangeBench precision measurement.
+
+Each slice must pass the repository quality gate and merge to `main` before the
+next slice begins.
+
+## Phase 5 delivery status
+
+- Phase 5A: implemented on its review branch; approval and merge pending.
+- Phase 5B: not started.
+- Phase 5C: not started.
+- Phase 5D: not started.
+- Phase 5E: not started.
+- Phase 5F: not started.
+
 ## TypeScript rules
 
 - Exported function removed

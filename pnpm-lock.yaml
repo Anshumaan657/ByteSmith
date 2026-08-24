@@ -40,7 +40,23 @@ importers:
 
   apps/github-action: {}
 
-  packages/analyzer-sdk: {}
+  packages/analyzer-sdk:
+    dependencies:
+      '@bytesmith/canonicalization':
+        specifier: workspace:*
+        version: link:../canonicalization
+      '@bytesmith/evidence':
+        specifier: workspace:*
+        version: link:../evidence
+      '@bytesmith/impact-manifest':
+        specifier: workspace:*
+        version: link:../impact-manifest
+      '@bytesmith/impact-types':
+        specifier: workspace:*
+        version: link:../impact-types
+      '@bytesmith/ir':
+        specifier: workspace:*
+        version: link:../ir
 
   packages/canonicalization:
     dependencies:
