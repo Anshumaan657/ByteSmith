@@ -1,4 +1,4 @@
-# ByteSmith Verify
+# ByteSmith
 
 **Prove the impact before you merge.**
 
