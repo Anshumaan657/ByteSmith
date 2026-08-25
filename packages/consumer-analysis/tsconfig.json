@@ -2,7 +2,17 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../canonicalization" },
+    { "path": "../contracts-openapi" },
+    { "path": "../contracts-typescript" },
+    { "path": "../evidence" },
+    { "path": "../impact-manifest" },
+    { "path": "../impact-types" },
+    { "path": "../ir" }
+  ]
 }

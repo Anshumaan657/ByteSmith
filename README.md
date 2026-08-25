@@ -26,10 +26,11 @@ local state in SQLite and the filesystem, and never blocks a pull request.
 - Phases 1–3 establish the MVP workspace, ChangeBench suite, exact Git inputs,
   evidence, and canonical IR.
 - Phase 4 provides deterministic TypeScript/JavaScript semantic analysis.
-- Phase 5 TypeScript rules are merged; the combined OpenAPI discovery and
-  compatibility slice is under review.
-- Consumer linkage, test intelligence, CLI, storage, and GitHub Action work
-  remain intentionally deferred to Phases 6–8.
+- Phase 5 TypeScript and OpenAPI contract rules are complete.
+- Phase 6 direct, workspace, OpenAPI, and bounded transitive consumer linkage is
+  under review; Jest/Vitest intelligence remains next.
+- CLI, storage, and GitHub Action work remain intentionally deferred to Phases
+  7–8.
 
 ## Requirements
 

@@ -245,7 +245,7 @@ next slice begins.
 - Phase 4B: complete and merged.
 - Phase 4C: complete and merged.
 - Phase 4D: complete and merged.
-- Phase 4E: implemented on its review branch; approval and merge pending.
+- Phase 4E: complete and merged through pull request #13.
 
 Phase 4E now exposes one bounded base/head analyzer entry point. It verifies
 exact revision identities and immutable snapshot digests, runs compiler work in
@@ -316,10 +316,7 @@ Every delivered group must pass the repository quality gate before merge.
 - Phase 5A: completed and merged through pull request #14.
 - Phase 5B: completed and merged through pull request #16.
 - Phase 5C: completed and merged through pull request #17.
-- Phase 5D: implemented on the combined Phase 5D–5F review branch.
-- Phase 5E: implemented on the combined Phase 5D–5F review branch.
-- Phase 5F: implemented on the combined Phase 5D–5F review branch; approval and
-  merge pending.
+- Phases 5D–5F: complete and merged together through pull request #18.
 
 ## TypeScript rules
 
@@ -385,6 +382,36 @@ expected changes with 100% preliminary precision.
 Connect changed contracts to useful, bounded consumer paths and actionable Jest
 or Vitest recommendations.
 
+## Delivery slices
+
+Phase 6 is divided into six reviewable slices. Phases 6A–6C are delivered
+together because direct consumers, package/API linkage, and transitive traversal
+share one evidence graph:
+
+1. **Phase 6A — Direct TypeScript consumers.** Link non-compatible changes to
+   authoritative import, reference, and call consumers across exact revisions.
+2. **Phase 6B — Workspace and OpenAPI consumers.** Report cross-workspace
+   package dependents and narrow, statically provable OpenAPI client calls.
+3. **Phase 6C — Bounded transitive paths.** Traverse consumer relationships in
+   deterministic order with cycle protection, deduplication, hard limits, and
+   visible truncation.
+4. **Phase 6D — Jest and Vitest discovery.** Discover test projects, frameworks,
+   test files, and supported runnable commands.
+5. **Phase 6E — Test recommendations and gaps.** Rank evidence-backed tests and
+   report “no test found” without claiming absence.
+6. **Phase 6F — Phase 6 integration.** Connect changes, terminal consumers, and
+   tests, then measure precision, recall, determinism, and performance.
+
+## Phase 6 delivery status
+
+- Phase 6A: implemented on the combined Phase 6A–6C review branch.
+- Phase 6B: implemented on the combined Phase 6A–6C review branch.
+- Phase 6C: implemented on the combined Phase 6A–6C review branch; approval and
+  merge pending.
+- Phase 6D: not started.
+- Phase 6E: not started.
+- Phase 6F: not started.
+
 ## Consumer deliverables
 
 - Direct import, reference, and call consumers
@@ -395,6 +422,15 @@ or Vitest recommendations.
 - Evidence for every edge in every reported path
 - Explicit unknowns for unresolved or dynamic consumer relationships
 - Relevance controls that do not remove files from coverage accounting
+
+Phases 6A–6C consume Phase 4’s authoritative revision-bound graph instead of
+re-parsing TypeScript heuristically. Existing symbols are matched across base
+and head before traversal; removed contracts fall back to the base graph.
+Terminal consumer impacts retain their complete shortest evidence paths while
+intermediate nodes remain inspectable path records. Cross-project paths produce
+workspace-package impacts when package ownership is proven. OpenAPI client
+linkage recognizes a deliberately narrow static set of `fetch`, `request`, and
+named HTTP-client calls; dynamic endpoints remain visible possible unknowns.
 
 ## Test deliverables
 
