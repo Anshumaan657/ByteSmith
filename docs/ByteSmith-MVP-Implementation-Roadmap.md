@@ -404,11 +404,11 @@ share one evidence graph:
 
 ## Phase 6 delivery status
 
-- Phase 6A: implemented on the combined Phase 6A–6C review branch.
-- Phase 6B: implemented on the combined Phase 6A–6C review branch.
-- Phase 6C: implemented on the combined Phase 6A–6C review branch; approval and
-  merge pending.
-- Phase 6D: not started.
+- Phase 6A: complete and merged through pull request #19.
+- Phase 6B: complete and merged through pull request #19.
+- Phase 6C: complete and merged through pull request #19.
+- Phase 6D: implemented on the Phase 6D review branch; approval and merge
+  pending.
 - Phase 6E: not started.
 - Phase 6F: not started.
 
@@ -431,6 +431,14 @@ intermediate nodes remain inspectable path records. Cross-project paths produce
 workspace-package impacts when package ownership is proven. OpenAPI client
 linkage recognizes a deliberately narrow static set of `fetch`, `request`, and
 named HTTP-client calls; dynamic endpoints remain visible possible unknowns.
+
+Phase 6D discovers Jest and Vitest projects from package manifests and static
+configuration without executing repository code. It applies supported glob
+patterns, finds exact test files and literal test names, derives package-manager
+commands from repository-owned scripts, and projects revision-bound tests into
+canonical IR. Dynamic configuration, regular-expression patterns, and dynamic
+test names remain visible possible gaps. Recommendation ranking and test-gap
+conclusions remain reserved for Phase 6E.
 
 ## Test deliverables
 

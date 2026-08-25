@@ -1,0 +1,14 @@
+export type TestDiscoveryErrorCode =
+  | "discovery_options_invalid"
+  | "repository_unreadable"
+  | "snapshot_binding_invalid";
+
+export class TestDiscoveryError extends Error {
+  readonly code: TestDiscoveryErrorCode;
+
+  constructor(code: TestDiscoveryErrorCode, message: string, cause?: unknown) {
+    super(message, cause === undefined ? undefined : { cause });
+    this.name = "TestDiscoveryError";
+    this.code = code;
+  }
+}

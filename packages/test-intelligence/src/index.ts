@@ -1,2 +1,5 @@
-// The MVP recommends tests but never skips or generates them automatically.
-export {};
+// The MVP discovers tests but never executes, skips, or generates them.
+export * from "./discovery.js";
+export * from "./errors.js";
+export * from "./projection.js";
+export type * from "./types.js";
