@@ -28,7 +28,8 @@ local state in SQLite and the filesystem, and never blocks a pull request.
 - Phase 4 provides deterministic TypeScript/JavaScript semantic analysis.
 - Phase 5 TypeScript and OpenAPI contract rules are complete.
 - Phase 6 direct, workspace, OpenAPI, and bounded transitive consumer linkage is
-  under review; Jest/Vitest intelligence remains next.
+  complete. Static Jest/Vitest project, file, test-name, and runnable-command
+  discovery is under review; recommendation ranking remains next.
 - CLI, storage, and GitHub Action work remain intentionally deferred to Phases
   7–8.
 
@@ -75,7 +76,7 @@ packages/
   contracts-typescript/   TypeScript/JavaScript semantic analysis
   contracts-openapi/      OpenAPI compatibility analysis
   consumer-analysis/      Bounded consumer relationships
-  test-intelligence/      Jest/Vitest recommendations and gaps
+  test-intelligence/      Jest/Vitest discovery, recommendations, and gaps
   storage-sqlite/         Embedded local persistence
   changebench/            Deterministic benchmark runner
 changebench/              Versioned benchmark fixtures and results

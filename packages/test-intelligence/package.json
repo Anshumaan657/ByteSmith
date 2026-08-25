@@ -8,5 +8,12 @@
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@bytesmith/canonicalization": "workspace:*",
+    "@bytesmith/evidence": "workspace:*",
+    "@bytesmith/impact-types": "workspace:*",
+    "@bytesmith/ir": "workspace:*",
+    "typescript": "6.0.3"
+  }
 }
