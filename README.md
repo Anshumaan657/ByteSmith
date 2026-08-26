@@ -27,10 +27,10 @@ local state in SQLite and the filesystem, and never blocks a pull request.
   evidence, and canonical IR.
 - Phase 4 provides deterministic TypeScript/JavaScript semantic analysis.
 - Phase 5 TypeScript and OpenAPI contract rules are complete.
-- Phase 6 direct, workspace, OpenAPI, and bounded transitive consumer linkage is
-  complete. Static Jest/Vitest project, file, test-name, and runnable-command
-  discovery is committed for review. Evidence-backed test ranking and explicit
-  `not_found` gaps are implemented on the dependent Phase 6E review branch.
+- Phase 6 consumer linkage, Jest/Vitest discovery, evidence-backed test
+  recommendations, explicit `not_found` gaps, and deterministic integration are
+  complete. The Phase 6F review branch adds measured precision, recall,
+  determinism, evidence closure, and development-runtime gates.
 - CLI, storage, and GitHub Action work remain intentionally deferred to Phases
   7–8.
 

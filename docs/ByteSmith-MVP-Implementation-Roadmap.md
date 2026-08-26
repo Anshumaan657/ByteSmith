@@ -407,10 +407,10 @@ share one evidence graph:
 - Phase 6A: complete and merged through pull request #19.
 - Phase 6B: complete and merged through pull request #19.
 - Phase 6C: complete and merged through pull request #19.
-- Phase 6D: committed and pushed on the Phase 6D review branch; merge pending.
-- Phase 6E: implemented on the dependent Phase 6E review branch; approval and
-  merge pending.
-- Phase 6F: not started.
+- Phase 6D: complete and merged through pull request #20.
+- Phase 6E: complete and merged through pull request #21.
+- Phase 6F: implemented on the Phase 6F review branch; approval and merge
+  pending.
 
 ## Consumer deliverables
 
@@ -448,6 +448,16 @@ consumer before ranking. Recommendations retain exact repository-owned
 commands, deterministic scores, reasons, and evidence. Missing runnable
 evidence produces the exact `not_found` wording “no test found”; Verify 0.1
 never upgrades that result to `proven_absent`.
+
+Phase 6F provides one deterministic integration result for TypeScript and
+OpenAPI changes. It validates exact-revision bindings, joins contract changes,
+bounded consumer paths, discovered tests, recommendations, gaps, unknowns, and
+their referenced evidence, and excludes runtime measurements from the semantic
+digest. A terminal test-file consumer is normalized to the nearest non-test
+consumer before the final result is built. ChangeBench-backed quality metrics
+enforce at least 90% direct-consumer precision, at least 80% test-selection
+recall, identical semantic digests across repeated runs, forbidden unrelated
+results, evidence closure, and a bounded development-runtime check.
 
 ## Test deliverables
 

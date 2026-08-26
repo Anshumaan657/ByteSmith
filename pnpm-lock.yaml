@@ -226,6 +226,12 @@ importers:
       '@bytesmith/consumer-analysis':
         specifier: workspace:*
         version: link:../consumer-analysis
+      '@bytesmith/contracts-openapi':
+        specifier: workspace:*
+        version: link:../contracts-openapi
+      '@bytesmith/contracts-typescript':
+        specifier: workspace:*
+        version: link:../contracts-typescript
       '@bytesmith/evidence':
         specifier: workspace:*
         version: link:../evidence

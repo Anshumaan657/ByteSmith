@@ -2,9 +2,19 @@ import type { CanonicalIr } from "@bytesmith/ir";
 import type {
   CombinedConsumerAnalysisResult,
   ConsumerAnalysisResult,
+  ConsumerPath,
+  ConsumerTraversalLimits,
 } from "@bytesmith/consumer-analysis";
+import type { OpenApiRevisionAnalysis } from "@bytesmith/contracts-openapi";
+import type {
+  CrossRevisionSymbolAnalysis,
+  RepositoryProjectDiscovery,
+  TypeScriptCompilerAnalysis,
+} from "@bytesmith/contracts-typescript";
 import type {
   Digest,
+  ManifestChange,
+  ManifestImpact,
   ManifestTestGap,
   ManifestTestRecommendation,
   ManifestUnknown,
@@ -152,5 +162,113 @@ export interface TestRecommendationResult {
   unknowns: ManifestUnknown[];
   evidence: Evidence[];
   diagnostics: string[];
+  semanticDigest: Digest;
+}
+
+export interface Phase6IntegrationRuntime {
+  durationMs: number;
+}
+
+export interface Phase6IntegrationResult {
+  schemaVersion: "1.0.0";
+  repositoryId: string;
+  baseRevision: string;
+  headRevision: string;
+  analyzerVersion: string;
+  family: "openapi" | "typescript";
+  status: "completed" | "incomplete";
+  discovery: TestRevisionDiscovery;
+  paths: ConsumerPath[];
+  impacts: ManifestImpact[];
+  recommendations: ManifestTestRecommendation[];
+  decisions: TestRecommendationDecision[];
+  testGaps: ManifestTestGap[];
+  unknowns: ManifestUnknown[];
+  evidence: Evidence[];
+  diagnostics: string[];
+  semanticDigest: Digest;
+  runtime: Phase6IntegrationRuntime;
+}
+
+export interface RunPhase6TypeScriptOptions {
+  ir: CanonicalIr;
+  changes: readonly ManifestChange[];
+  baseAnalysis: TypeScriptCompilerAnalysis;
+  headAnalysis: TypeScriptCompilerAnalysis;
+  symbolAnalysis: CrossRevisionSymbolAnalysis;
+  projectDiscovery?: RepositoryProjectDiscovery;
+  base: TestSnapshotInput;
+  head: TestSnapshotInput;
+  consumerLimits?: Partial<ConsumerTraversalLimits>;
+  recommendationLimits?: Partial<TestRecommendationLimits>;
+  analyzerVersion?: string;
+}
+
+export interface RunPhase6OpenApiOptions {
+  contractIr: CanonicalIr;
+  linkageIr: CanonicalIr;
+  changes: readonly ManifestChange[];
+  baseAnalysis: OpenApiRevisionAnalysis;
+  headAnalysis: OpenApiRevisionAnalysis;
+  base: TestSnapshotInput;
+  head: TestSnapshotInput;
+  consumerLimits?: Partial<ConsumerTraversalLimits>;
+  recommendationLimits?: Partial<TestRecommendationLimits>;
+  analyzerVersion?: string;
+}
+
+export interface Phase6ExpectedConsumer {
+  name: string;
+  category?: "direct" | "transitive" | "contract";
+}
+
+export interface Phase6ExpectedTest {
+  name: string;
+  commandContains?: string;
+  reasonContains?: string;
+}
+
+export interface Phase6QualityCase {
+  id: string;
+  result: Phase6IntegrationResult;
+  repeatResult?: Phase6IntegrationResult;
+  requiredConsumers: Phase6ExpectedConsumer[];
+  forbiddenConsumers?: Phase6ExpectedConsumer[];
+  requiredTests: Phase6ExpectedTest[];
+  forbiddenTests?: Phase6ExpectedTest[];
+  requiredGapComponents?: string[];
+}
+
+export interface Phase6QualityCaseResult {
+  id: string;
+  passed: boolean;
+  consumerTruePositives: number;
+  consumerFalsePositives: number;
+  consumerFalseNegatives: number;
+  testTruePositives: number;
+  testFalsePositives: number;
+  testFalseNegatives: number;
+  missingGapComponents: string[];
+  forbiddenConsumerMatches: string[];
+  forbiddenTestMatches: string[];
+}
+
+export interface Phase6QualityMetrics {
+  schemaVersion: "1.0.0";
+  cases: number;
+  passedCases: number;
+  directConsumerPrecision: number;
+  consumerRecall: number;
+  testSelectionRecall: number;
+  testPrecision: number;
+  deterministicRate: number;
+  gates: {
+    directConsumerPrecision: boolean;
+    testSelectionRecall: boolean;
+    determinism: boolean;
+    forbiddenResults: boolean;
+  };
+  passed: boolean;
+  caseResults: Phase6QualityCaseResult[];
   semanticDigest: Digest;
 }
