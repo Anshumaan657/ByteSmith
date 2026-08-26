@@ -2,5 +2,6 @@
 export * from "./discovery.js";
 export * from "./errors.js";
 export * from "./projection.js";
+export * from "./phase6.js";
 export * from "./recommendations.js";
 export type * from "./types.js";

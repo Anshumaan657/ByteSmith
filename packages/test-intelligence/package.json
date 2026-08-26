@@ -12,6 +12,8 @@
   "dependencies": {
     "@bytesmith/canonicalization": "workspace:*",
     "@bytesmith/consumer-analysis": "workspace:*",
+    "@bytesmith/contracts-openapi": "workspace:*",
+    "@bytesmith/contracts-typescript": "workspace:*",
     "@bytesmith/evidence": "workspace:*",
     "@bytesmith/impact-manifest": "workspace:*",
     "@bytesmith/impact-types": "workspace:*",

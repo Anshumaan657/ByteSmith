@@ -9,6 +9,8 @@
   "references": [
     { "path": "../canonicalization" },
     { "path": "../consumer-analysis" },
+    { "path": "../contracts-openapi" },
+    { "path": "../contracts-typescript" },
     { "path": "../evidence" },
     { "path": "../impact-manifest" },
     { "path": "../impact-types" },
