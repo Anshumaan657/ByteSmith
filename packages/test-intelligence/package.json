@@ -11,7 +11,9 @@
   ],
   "dependencies": {
     "@bytesmith/canonicalization": "workspace:*",
+    "@bytesmith/consumer-analysis": "workspace:*",
     "@bytesmith/evidence": "workspace:*",
+    "@bytesmith/impact-manifest": "workspace:*",
     "@bytesmith/impact-types": "workspace:*",
     "@bytesmith/ir": "workspace:*",
     "typescript": "6.0.3"

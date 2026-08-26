@@ -8,7 +8,9 @@
   "include": ["src/**/*.ts"],
   "references": [
     { "path": "../canonicalization" },
+    { "path": "../consumer-analysis" },
     { "path": "../evidence" },
+    { "path": "../impact-manifest" },
     { "path": "../impact-types" },
     { "path": "../ir" }
   ]
