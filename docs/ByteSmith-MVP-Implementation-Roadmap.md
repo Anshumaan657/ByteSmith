@@ -407,9 +407,9 @@ share one evidence graph:
 - Phase 6A: complete and merged through pull request #19.
 - Phase 6B: complete and merged through pull request #19.
 - Phase 6C: complete and merged through pull request #19.
-- Phase 6D: implemented on the Phase 6D review branch; approval and merge
-  pending.
-- Phase 6E: not started.
+- Phase 6D: committed and pushed on the Phase 6D review branch; merge pending.
+- Phase 6E: implemented on the dependent Phase 6E review branch; approval and
+  merge pending.
 - Phase 6F: not started.
 
 ## Consumer deliverables
@@ -437,8 +437,17 @@ configuration without executing repository code. It applies supported glob
 patterns, finds exact test files and literal test names, derives package-manager
 commands from repository-owned scripts, and projects revision-bound tests into
 canonical IR. Dynamic configuration, regular-expression patterns, and dynamic
-test names remain visible possible gaps. Recommendation ranking and test-gap
-conclusions remain reserved for Phase 6E.
+test names remain visible possible gaps. Phase 6E consumes this output without
+changing Phase 6D discovery semantics.
+
+Phase 6E connects discovered tests to Phase 6 consumer paths. Authoritative
+call, reference, and import evidence outranks convention evidence; naming,
+directory, and package conventions remain explicitly low confidence. A test
+file that terminates a consumer path is folded back to the nearest non-test
+consumer before ranking. Recommendations retain exact repository-owned
+commands, deterministic scores, reasons, and evidence. Missing runnable
+evidence produces the exact `not_found` wording “no test found”; Verify 0.1
+never upgrades that result to `proven_absent`.
 
 ## Test deliverables
 

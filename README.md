@@ -29,7 +29,8 @@ local state in SQLite and the filesystem, and never blocks a pull request.
 - Phase 5 TypeScript and OpenAPI contract rules are complete.
 - Phase 6 direct, workspace, OpenAPI, and bounded transitive consumer linkage is
   complete. Static Jest/Vitest project, file, test-name, and runnable-command
-  discovery is under review; recommendation ranking remains next.
+  discovery is committed for review. Evidence-backed test ranking and explicit
+  `not_found` gaps are implemented on the dependent Phase 6E review branch.
 - CLI, storage, and GitHub Action work remain intentionally deferred to Phases
   7–8.
 

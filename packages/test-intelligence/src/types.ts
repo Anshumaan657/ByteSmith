@@ -1,4 +1,15 @@
 import type { CanonicalIr } from "@bytesmith/ir";
+import type {
+  CombinedConsumerAnalysisResult,
+  ConsumerAnalysisResult,
+} from "@bytesmith/consumer-analysis";
+import type {
+  Digest,
+  ManifestTestGap,
+  ManifestTestRecommendation,
+  ManifestUnknown,
+} from "@bytesmith/impact-manifest";
+import type { Evidence } from "@bytesmith/impact-types";
 
 export type TestFramework = "jest" | "vitest";
 export type TestDiscoveryStatus = "completed" | "incomplete";
@@ -95,4 +106,51 @@ export interface TestDiscoveryComparisonResult {
   baseDiscovery: TestRevisionDiscovery;
   headDiscovery: TestRevisionDiscovery;
   ir: CanonicalIr;
+}
+
+export interface TestRecommendationLimits {
+  maxRecommendationsPerComponent: number;
+}
+
+export type TestRecommendationSignal =
+  | "direct_reference"
+  | "direct_import"
+  | "module_import"
+  | "directory_convention"
+  | "name_convention"
+  | "package_convention";
+
+export interface TestRecommendationDecision {
+  recommendationId: string;
+  affectedComponentId: string;
+  sourceImpactIds: string[];
+  rank: number;
+  score: number;
+  confidence: "verified" | "high" | "low";
+  signals: TestRecommendationSignal[];
+}
+
+export interface RecommendTestsInput {
+  ir: CanonicalIr;
+  testIr: CanonicalIr;
+  discovery: TestRevisionDiscovery;
+  consumers: ConsumerAnalysisResult | CombinedConsumerAnalysisResult;
+  limits?: Partial<TestRecommendationLimits>;
+  analyzerVersion?: string;
+}
+
+export interface TestRecommendationResult {
+  schemaVersion: "1.0.0";
+  repositoryId: string;
+  baseRevision: string;
+  headRevision: string;
+  analyzerVersion: string;
+  status: "completed" | "incomplete";
+  recommendations: ManifestTestRecommendation[];
+  decisions: TestRecommendationDecision[];
+  gaps: ManifestTestGap[];
+  unknowns: ManifestUnknown[];
+  evidence: Evidence[];
+  diagnostics: string[];
+  semanticDigest: Digest;
 }

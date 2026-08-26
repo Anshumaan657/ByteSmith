@@ -1,5 +1,9 @@
 export type TestDiscoveryErrorCode =
   | "discovery_options_invalid"
+  | "recommendation_binding_invalid"
+  | "recommendation_evidence_missing"
+  | "recommendation_input_invalid"
+  | "recommendation_limit_invalid"
   | "repository_unreadable"
   | "snapshot_binding_invalid";
 
