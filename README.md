@@ -31,8 +31,9 @@ local state in SQLite and the filesystem, and never blocks a pull request.
   recommendations, explicit `not_found` gaps, and deterministic integration are
   complete. The Phase 6F review branch adds measured precision, recall,
   determinism, evidence closure, and development-runtime gates.
-- CLI, storage, and GitHub Action work remain intentionally deferred to Phases
-  7–8.
+- Phase 7 foundation now provides the shared analysis engine, exact Git archive
+  snapshots, strict `.bytesmith/config.json`, SQLite persistence/cache, and the
+  CLI contract. GitHub Action reporting remains deferred to Phase 8.
 
 ## Requirements
 
@@ -78,6 +79,7 @@ packages/
   contracts-openapi/      OpenAPI compatibility analysis
   consumer-analysis/      Bounded consumer relationships
   test-intelligence/      Jest/Vitest discovery, recommendations, and gaps
+  analysis-engine/        Exact-snapshot orchestration and final manifest assembly
   storage-sqlite/         Embedded local persistence
   changebench/            Deterministic benchmark runner
 changebench/              Versioned benchmark fixtures and results
@@ -92,6 +94,7 @@ docs/                     MVP scope, architecture, roadmap, and ADRs
 - [MVP scope](docs/MVP-SCOPE.md)
 - [MVP architecture](docs/MVP-ARCHITECTURE.md)
 - [Phase-by-phase roadmap](docs/ByteSmith-MVP-Implementation-Roadmap.md)
+- [Phase 7 architecture and contracts](docs/Phase-7-Architecture-Contracts.md)
 - [Phase 0 specification package](docs/architecture-decisions/Phase-0-Specification-Package.md)
 
 Features outside Verify 0.1 are documented as deferred rather than represented

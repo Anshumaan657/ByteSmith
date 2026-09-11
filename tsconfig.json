@@ -16,6 +16,7 @@
     { "path": "./packages/consumer-analysis" },
     { "path": "./packages/test-intelligence" },
     { "path": "./packages/storage-sqlite" },
+    { "path": "./packages/analysis-engine" },
     { "path": "./packages/changebench" },
     { "path": "./apps/cli" },
     { "path": "./apps/github-action" }

@@ -8,11 +8,14 @@ export async function loadSchemas(root) {
   const names = [
     "impact-types.schema.json",
     "impact-manifest.schema.json",
-    "changebench-case.schema.json"
+    "changebench-case.schema.json",
+    "bytesmith.config.schema.json",
   ];
   const schemas = {};
   for (const name of names) {
-    schemas[name] = JSON.parse(await fs.readFile(path.join(directory, name), "utf8"));
+    schemas[name] = JSON.parse(
+      await fs.readFile(path.join(directory, name), "utf8"),
+    );
   }
   return schemas;
 }
@@ -23,7 +26,7 @@ export async function createSchemaValidators(root) {
     allErrors: true,
     strict: true,
     strictRequired: false,
-    validateFormats: true
+    validateFormats: true,
   });
   addFormats(ajv, { mode: "full" });
 
@@ -31,10 +34,15 @@ export async function createSchemaValidators(root) {
 
   const validators = {
     manifest: ajv.getSchema(schemas["impact-manifest.schema.json"].$id),
-    changebenchCase: ajv.getSchema(schemas["changebench-case.schema.json"].$id)
+    changebenchCase: ajv.getSchema(schemas["changebench-case.schema.json"].$id),
+    config: ajv.getSchema(schemas["bytesmith.config.schema.json"].$id),
   };
 
-  if (!validators.manifest || !validators.changebenchCase) {
+  if (
+    !validators.manifest ||
+    !validators.changebenchCase ||
+    !validators.config
+  ) {
     throw new Error("Required schema validator was not compiled.");
   }
 

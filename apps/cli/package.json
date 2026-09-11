@@ -13,5 +13,12 @@
   ],
   "engines": {
     "node": ">=22.13.0"
+  },
+  "dependencies": {
+    "@bytesmith/analysis-engine": "workspace:*",
+    "@bytesmith/impact-manifest": "workspace:*",
+    "@bytesmith/manifest-validator": "workspace:*",
+    "@bytesmith/storage-sqlite": "workspace:*",
+    "@bytesmith/vcs-git": "workspace:*"
   }
 }

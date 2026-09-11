@@ -2,7 +2,15 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../../packages/analysis-engine" },
+    { "path": "../../packages/impact-manifest" },
+    { "path": "../../packages/manifest-validator" },
+    { "path": "../../packages/storage-sqlite" },
+    { "path": "../../packages/vcs-git" }
+  ]
 }

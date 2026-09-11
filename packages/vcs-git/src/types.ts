@@ -73,3 +73,10 @@ export interface NormalizedGitDiff {
   totalChangedFiles: number;
   files: GitChangedFile[];
 }
+
+export interface GitSnapshot {
+  directory: string;
+  revision: GitObjectId;
+  /** Removes the materialized snapshot and its temporary archive. */
+  cleanup(): Promise<void>;
+}

@@ -81,7 +81,7 @@ that supports Verify 0.1 without erasing deferred product intent.
 
 - Authoritative MVP scope, exclusions, architecture, and this roadmap
 - Two active apps: CLI and GitHub Action
-- Fifteen active internal packages with explicit responsibilities
+- Sixteen active internal packages with explicit responsibilities
 - Removal of empty self-hosted, MCP, web, service-infrastructure, enterprise
   contract, cloud-storage, and framework-pack placeholders
 - pnpm workspace pinned to pnpm 11.19.0
@@ -94,7 +94,7 @@ that supports Verify 0.1 without erasing deferred product intent.
 ## Exit gate
 
 - A fresh clone installs with the frozen lockfile.
-- All 17 workspaces build and type-check.
+- All 18 workspaces build and type-check.
 - No deferred implementation path exists in the active tree.
 - Phase 0 validation still passes without semantic changes.
 - Workspace, tests, lint, formatting, and CI commands pass.
@@ -487,6 +487,7 @@ Turn the analysis engine into a complete offline developer workflow.
 
 ## Manifest deliverables
 
+- Reusable `@bytesmith/analysis-engine` orchestration boundary shared by CLI and the future GitHub Action
 - Schema and engine versions
 - Repository identity plus exact base/head revisions
 - Final result status
@@ -497,7 +498,9 @@ Turn the analysis engine into a complete offline developer workflow.
 
 ## Storage deliverables
 
-- SQLite schema and migrations
+- SQLite schema and migrations using Node `node:sqlite` on the pinned Node 22 runtime
+- `.bytesmith/config.json` strict effective configuration and digest contract
+- Exact Git archive snapshots with no working-tree checkout mutation
 - Local filesystem manifest/report output
 - Revision/version-scoped cache keys
 - Corruption detection and safe cache invalidation
@@ -508,9 +511,9 @@ Turn the analysis engine into a complete offline developer workflow.
 - `bytesmith init`
 - `bytesmith doctor`
 - `bytesmith analyze --base <ref> --head <ref>`
-- `bytesmith contracts`
-- `bytesmith test-plan`
-- `bytesmith verify-impact`
+- `bytesmith contracts --manifest <file>`
+- `bytesmith test-plan --manifest <file>`
+- `bytesmith verify-impact --manifest <file>`
 - `bytesmith benchmark`
 
 ## CLI behavior

@@ -14,7 +14,8 @@ import type {
 } from "@bytesmith/vcs-git";
 
 export type Conclusion = "pass" | "warn" | "fail" | "incomplete" | "error";
-export type AnalyzerStatus = "completed" | "incomplete" | "error";
+export type AnalyzerStatus =
+  "completed" | "incomplete" | "error" | "not_applicable";
 
 export interface Digest {
   algorithm: "sha256";
@@ -257,6 +258,28 @@ export interface ManifestBuildInput {
   ir: CanonicalIr;
   analyzers: readonly ManifestAnalyzer[];
   pullRequestId?: string;
+}
+
+/**
+ * Inputs for the Phase 7 assembly boundary. `scopeIr` is deliberately kept
+ * separate from analyzer IR: it contains exactly one record for every changed
+ * file and therefore remains the manifest's exhaustive coverage denominator.
+ */
+export interface ManifestAssemblyInput extends Omit<ManifestBuildInput, "ir"> {
+  /** The exhaustive changed-file scope IR, not a family analyzer IR. */
+  scopeIr: CanonicalIr;
+  evidence?: readonly Evidence[];
+  changes?: readonly ManifestChange[];
+  impacts?: readonly ManifestImpact[];
+  testRecommendations?: readonly ManifestTestRecommendation[];
+  testGaps?: readonly ManifestTestGap[];
+  unknowns?: readonly ManifestUnknown[];
+  policies?: readonly ManifestPolicy[];
+  dispositions?: readonly ManifestDisposition[];
+  appeals?: readonly ManifestAppeal[];
+  waivers?: readonly ManifestWaiver[];
+  suspensions?: readonly ManifestSuspension[];
+  auditEvents?: readonly AuditEvent[];
 }
 
 export interface Phase3PipelineOptions {

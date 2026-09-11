@@ -293,12 +293,12 @@ test("ByteSmith discovers its own workspace without false package conflicts", as
   });
   assert.equal(result.status, "completed");
   assert.equal(result.workspace.manager, "pnpm");
-  assert.equal(result.workspace.packages.length, 18);
+  assert.equal(result.workspace.packages.length, 19);
   assert.equal(
     result.workspace.packages.filter((item) => item.workspaceMember).length,
-    17,
+    18,
   );
-  assert.equal(result.projects.length, 20);
+  assert.equal(result.projects.length, 21);
   assert.deepEqual(result.diagnostics, []);
 });
 

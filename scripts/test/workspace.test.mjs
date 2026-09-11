@@ -8,8 +8,8 @@ test("the active workspace contains only MVP applications and packages", async (
 
   assert.deepEqual(result, {
     applications: 2,
-    packages: 15,
-    workspaces: 17,
+    packages: 16,
+    workspaces: 18,
     deferredPaths: 20,
   });
 });
