@@ -34,7 +34,11 @@ local state in SQLite and the filesystem, and never blocks a pull request.
 - Phase 7 is complete: the shared analysis engine, exact Git
   archive snapshots, strict configuration, SQLite persistence/cache, complete
   offline CLI, focused reports, verification, and ChangeBench command are
-  covered by automated tests. The Phase 8 Action executes the same exact-revision engine as the CLI and publishes a stable, advisory pull-request report.
+  covered by automated tests.
+- Phase 8 is complete: the Action executes the same exact-revision engine as the
+  CLI and publishes a stable, advisory pull-request report.
+- Phase 9 release engineering is in progress. Automated gates are implemented;
+  real-repository and five-developer evidence remains explicitly external.
 
 ## Requirements
 
@@ -97,6 +101,11 @@ docs/                     MVP scope, architecture, roadmap, and ADRs
 - [Phase-by-phase roadmap](docs/ByteSmith-MVP-Implementation-Roadmap.md)
 - [Phase 7 architecture and contracts](docs/Phase-7-Architecture-Contracts.md)
 - [CLI workflow](docs/CLI.md)
+- [Installation and troubleshooting](docs/INSTALLATION.md)
+- [GitHub Action](docs/GITHUB-ACTION.md)
+- [Supported patterns](docs/SUPPORTED-PATTERNS.md)
+- [Known limitations](docs/KNOWN-LIMITATIONS.md)
+- [Release process](docs/RELEASING.md)
 - [Phase 0 specification package](docs/architecture-decisions/Phase-0-Specification-Package.md)
 
 Features outside Verify 0.1 are documented as deferred rather than represented

@@ -48,7 +48,9 @@ corepack pnpm --filter bytesmith exec bytesmith benchmark --case relevant-test-s
 ```
 
 The benchmark materializes deterministic temporary Git repositories and reports
-precision, test recall, determinism, crash rate, and pass/fail quality gates.
+overall, contract, and direct-consumer precision; test recall; unsupported and
+incomplete rates; determinism; crashes; duration; peak resident memory; and
+pass/fail release gates.
 
 ## Exit codes
 
