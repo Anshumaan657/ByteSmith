@@ -9,6 +9,18 @@
     "dist"
   ],
   "engines": {
-    "node": ">=22.13.0"
+    "node": ">=20.0.0"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "bundle": "tsc -p tsconfig.json && ncc build dist/index.js --out dist/bundle -m",
+    "test": "node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@actions/core": "1.11.1",
+    "@bytesmith/vcs-git": "workspace:*"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "0.38.3"
   }
 }
