@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist",
+    "types": ["node"]
+  },
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../canonicalization" },
+    { "path": "../consumer-analysis" },
+    { "path": "../contracts-openapi" },
+    { "path": "../contracts-typescript" },
+    { "path": "../impact-manifest" },
+    { "path": "../ir" },
+    { "path": "../manifest-validator" },
+    { "path": "../repository-inventory" },
+    { "path": "../storage-sqlite" },
+    { "path": "../test-intelligence" },
+    { "path": "../vcs-git" }
+  ]
+}
