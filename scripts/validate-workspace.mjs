@@ -7,6 +7,7 @@ const repositoryRoot = fileURLToPath(new URL("../", import.meta.url));
 const expectedWorkspaces = new Map([
   ["apps/cli", "bytesmith"],
   ["apps/github-action", "@bytesmith/github-action"],
+  ["packages/analysis-engine", "@bytesmith/analysis-engine"],
   ["packages/analyzer-sdk", "@bytesmith/analyzer-sdk"],
   ["packages/canonicalization", "@bytesmith/canonicalization"],
   ["packages/changebench", "@bytesmith/changebench"],
@@ -48,7 +49,10 @@ const deferredPaths = [
 ];
 
 async function readJson(relativePath) {
-  const contents = await readFile(path.join(repositoryRoot, relativePath), "utf8");
+  const contents = await readFile(
+    path.join(repositoryRoot, relativePath),
+    "utf8",
+  );
   return JSON.parse(contents);
 }
 
@@ -121,7 +125,9 @@ export async function validateWorkspace() {
     .map((reference) => reference.path.replace(/^\.\//, ""))
     .sort();
   if (JSON.stringify(references) !== JSON.stringify(expectedPaths)) {
-    throw new Error("Root TypeScript project references must match the MVP workspaces");
+    throw new Error(
+      "Root TypeScript project references must match the MVP workspaces",
+    );
   }
 
   return {
@@ -132,7 +138,10 @@ export async function validateWorkspace() {
   };
 }
 
-if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+if (
+  process.argv[1] &&
+  path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)
+) {
   const result = await validateWorkspace();
   console.log(
     `Validated ${result.workspaces} MVP workspaces (${result.applications} apps and ${result.packages} packages); ${result.deferredPaths} deferred paths are absent.`,

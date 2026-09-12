@@ -1,0 +1,25 @@
+{
+  "name": "@bytesmith/analysis-engine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Reusable exact-revision ByteSmith analysis orchestration and manifest assembly",
+  "type": "module",
+  "exports": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "dependencies": {
+    "@bytesmith/canonicalization": "workspace:*",
+    "@bytesmith/consumer-analysis": "workspace:*",
+    "@bytesmith/contracts-openapi": "workspace:*",
+    "@bytesmith/contracts-typescript": "workspace:*",
+    "@bytesmith/impact-manifest": "workspace:*",
+    "@bytesmith/ir": "workspace:*",
+    "@bytesmith/manifest-validator": "workspace:*",
+    "@bytesmith/repository-inventory": "workspace:*",
+    "@bytesmith/storage-sqlite": "workspace:*",
+    "@bytesmith/test-intelligence": "workspace:*",
+    "@bytesmith/vcs-git": "workspace:*"
+  }
+}
