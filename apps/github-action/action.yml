@@ -1,0 +1,44 @@
+name: ByteSmith Verify
+description: Advisory exact-revision ByteSmith analysis for pull requests
+author: Anshumaan657
+inputs:
+  base:
+    description: Exact pull-request base commit. Defaults to the event payload base SHA.
+    required: false
+  head:
+    description: Exact pull-request head commit. Defaults to the event payload head SHA.
+    required: false
+  config:
+    description: Path to the ByteSmith configuration file relative to the repository root.
+    required: false
+    default: .bytesmith/config.json
+  database:
+    description: Optional SQLite cache path relative to the repository root.
+    required: false
+  use-cache:
+    description: Whether to use the local ByteSmith SQLite cache.
+    required: false
+    default: 'true'
+  publish:
+    description: Whether to publish the advisory report when reporting is enabled.
+    required: false
+    default: 'true'
+outputs:
+  conclusion:
+    description: ByteSmith conclusion, or error when startup validation fails.
+  semantic-digest:
+    description: Canonical semantic digest for the analyzed manifest.
+  base-revision:
+    description: Exact analyzed base commit.
+  head-revision:
+    description: Exact analyzed head commit.
+  merge-base:
+    description: Exact Git merge-base commit used by ByteSmith.
+  error-code:
+    description: Stable startup or runtime error code when execution could not complete.
+runs:
+  using: node20
+  main: dist/bundle/index.js
+branding:
+  color: purple
+  icon: shield
