@@ -17,7 +17,8 @@ export type GitErrorCode =
   | "diff_path_invalid"
   | "diff_path_collision"
   | "diff_duplicate_path"
-  | "diff_metadata_mismatch";
+  | "diff_metadata_mismatch"
+  | "snapshot_materialization_failed";
 
 export interface GitErrorOptions {
   operation: string;
