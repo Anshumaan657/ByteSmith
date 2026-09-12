@@ -17,9 +17,16 @@ import {
   executeActionAnalysis,
   parseBooleanInput,
 } from "./analysis.js";
+import {
+  renderAdvisoryReport,
+  publishAdvisoryReport,
+  GitHubReportError,
+} from "./report.js";
+import type { ImpactManifest } from "@bytesmith/impact-manifest";
 
 export * from "./analysis.js";
 export * from "./context.js";
+export * from "./report.js";
 
 export interface ActionEnvironment {
   GITHUB_ACTIONS?: string;
@@ -28,6 +35,8 @@ export interface ActionEnvironment {
   GITHUB_REPOSITORY?: string;
   GITHUB_SHA?: string;
   GITHUB_WORKSPACE?: string;
+  GITHUB_API_URL?: string;
+  GITHUB_STEP_SUMMARY?: string;
 }
 
 export interface ActionStartupContext {
@@ -180,9 +189,34 @@ export async function validateActionEnvironment(
   };
 }
 
+async function writeJobSummary(report: string): Promise<void> {
+  const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+  if (!summaryPath) return;
+  try {
+    const { appendFile } = await import("node:fs/promises");
+    await appendFile(summaryPath, report, "utf8");
+  } catch {
+    // Best effort; ignore summary write failures.
+  }
+}
+
+function parsePublishInput(value: string): boolean {
+  const normalized = value.trim().toLowerCase();
+  if (normalized === "true") return true;
+  if (normalized === "false") return false;
+  throw new ActionError(
+    "invalid_input",
+    "Action input publish must be true or false.",
+  );
+}
+
 export async function runAction(
   environment: ActionEnvironment = process.env,
 ): Promise<void> {
+  let reportState: "created" | "updated" | "summary" | "skipped" = "skipped";
+  let reportError: Error | undefined;
+  let manifest: ImpactManifest | undefined;
+
   try {
     const baseInput = core.getInput("base");
     const headInput = core.getInput("head");
@@ -191,6 +225,9 @@ export async function runAction(
       "use-cache",
       true,
     );
+    const publish = parsePublishInput(core.getInput("publish"));
+    const githubToken = core.getInput("github-token");
+
     const context = await validateActionEnvironment(environment, {
       ...(baseInput ? { base: baseInput } : {}),
       ...(headInput ? { head: headInput } : {}),
@@ -200,15 +237,64 @@ export async function runAction(
       database: core.getInput("database"),
       useCache,
     });
-    const { manifest } = execution;
+    manifest = execution.manifest;
+
     core.setOutput("conclusion", manifest.status.conclusion);
     core.setOutput("semantic-digest", manifest.integrity.semanticDigest.value);
     core.setOutput("base-revision", manifest.comparison.baseRevision);
     core.setOutput("head-revision", manifest.comparison.headRevision);
     core.setOutput("merge-base", manifest.comparison.mergeBaseRevision ?? "");
+    core.setOutput("error-code", "");
+
     core.info(
       `ByteSmith ${manifest.status.conclusion}: ${manifest.changes.length} changes, ${manifest.impacts.length} impacts, ${manifest.unknowns.length} unknowns.`,
     );
+
+    if (publish) {
+      const report = renderAdvisoryReport(manifest, context.repository);
+      const apiUrl = environment.GITHUB_API_URL;
+      try {
+        const result = await publishAdvisoryReport({
+          repository: context.repository,
+          pullRequestNumber: context.pullRequest.number,
+          analyzedHead: manifest.comparison.headRevision,
+          token: githubToken,
+          body: report,
+          ...(apiUrl ? { apiUrl } : {}),
+        });
+        reportState = result.state;
+        core.info(`ByteSmith advisory report ${result.state}.`);
+      } catch (cause) {
+        reportError = cause instanceof Error ? cause : new Error(String(cause));
+        if (cause instanceof GitHubReportError) {
+          if (
+            cause.code === "permission_denied" ||
+            cause.code === "missing_github_token"
+          ) {
+            core.warning(
+              `ByteSmith could not publish the advisory report (${cause.code}); writing to job summary instead.`,
+            );
+            await writeJobSummary(report);
+            reportState = "summary";
+          } else if (cause.code === "stale_analysis") {
+            core.warning(cause.message);
+            reportState = "skipped";
+          } else {
+            core.warning(
+              `ByteSmith report publication failed (${cause.code}); writing to job summary instead.`,
+            );
+            await writeJobSummary(report);
+            reportState = "summary";
+          }
+        } else {
+          core.warning(
+            "ByteSmith report publication failed unexpectedly; writing to job summary instead.",
+          );
+          await writeJobSummary(report);
+          reportState = "summary";
+        }
+      }
+    }
   } catch (cause) {
     const error =
       cause instanceof ActionError
@@ -217,14 +303,53 @@ export async function runAction(
           ? new ActionError(cause.code, cause.message, { cause })
           : cause instanceof PullRequestContextError
             ? new ActionError(cause.code, cause.message, { cause })
-            : new ActionError(
-                "startup_error",
-                "ByteSmith Verify could not start safely.",
-                { cause },
-              );
+            : cause instanceof GitHubReportError
+              ? new ActionError(cause.code, cause.message, { cause })
+              : new ActionError(
+                  "startup_error",
+                  "ByteSmith Verify could not start safely.",
+                  { cause },
+                );
+
     core.setOutput("conclusion", "error");
     core.setOutput("error-code", error.code);
-    core.setFailed(`${error.code}: ${error.message}`);
+    core.setOutput("semantic-digest", "");
+    core.setOutput("base-revision", "");
+    core.setOutput("head-revision", "");
+    core.setOutput("merge-base", "");
+    core.setOutput("report-state", reportState);
+
+    if (manifest) {
+      core.setOutput(
+        "semantic-digest",
+        manifest.integrity.semanticDigest.value,
+      );
+      core.setOutput("base-revision", manifest.comparison.baseRevision);
+      core.setOutput("head-revision", manifest.comparison.headRevision);
+      core.setOutput("merge-base", manifest.comparison.mergeBaseRevision ?? "");
+    }
+
+    if (
+      error.code === "stale_analysis" ||
+      error.code === "permission_denied" ||
+      error.code === "missing_github_token"
+    ) {
+      core.warning(`${error.code}: ${error.message}`);
+    } else {
+      core.setFailed(`${error.code}: ${error.message}`);
+    }
+    return;
+  }
+
+  core.setOutput("report-state", reportState);
+
+  if (
+    reportError &&
+    !["permission_denied", "missing_github_token", "stale_analysis"].includes(
+      reportError instanceof GitHubReportError ? reportError.code : "",
+    )
+  ) {
+    core.setOutput("error-code", "report_publication_failed");
   }
 }
 

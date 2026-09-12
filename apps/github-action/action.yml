@@ -23,6 +23,10 @@ inputs:
     description: Whether to publish the advisory report when reporting is enabled.
     required: false
     default: 'true'
+  github-token:
+    description: GitHub token used to update the single advisory pull-request report.
+    required: false
+    default: ${{ github.token }}
 outputs:
   conclusion:
     description: ByteSmith conclusion, or error when startup validation fails.
@@ -36,6 +40,8 @@ outputs:
     description: Exact Git merge-base commit used by ByteSmith.
   error-code:
     description: Stable startup or runtime error code when execution could not complete.
+  report-state:
+    description: Whether the advisory report was created, updated, written to the summary, or skipped.
 runs:
   using: node20
   main: dist/bundle/index.js
