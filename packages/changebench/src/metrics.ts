@@ -8,6 +8,21 @@ function rounded(value: number): number {
   return Number(value.toFixed(6));
 }
 
+function groupPrecision(
+  results: CaseRunResult[],
+  group: "changes" | "impacts",
+): number {
+  let matched = 0;
+  let falsePositives = 0;
+  for (const result of results) {
+    const counts = result.evaluation?.groups[group];
+    if (!counts) continue;
+    matched += counts.matched;
+    falsePositives += counts.unexpected + counts.forbiddenMatched;
+  }
+  return rounded(ratio(matched, matched + falsePositives));
+}
+
 export function calculateMetrics(results: CaseRunResult[]): BenchmarkMetrics {
   let truePositives = 0;
   let falsePositives = 0;
@@ -53,6 +68,8 @@ export function calculateMetrics(results: CaseRunResult[]): BenchmarkMetrics {
     falsePositives,
     falseNegatives,
     precision: rounded(precision),
+    contractPrecision: groupPrecision(results, "changes"),
+    directConsumerPrecision: groupPrecision(results, "impacts"),
     recall: rounded(recall),
     f1: rounded(f1),
     testSelectionRecall: rounded(ratio(matchedTests, requiredTests)),

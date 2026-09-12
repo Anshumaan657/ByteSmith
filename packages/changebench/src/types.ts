@@ -240,6 +240,8 @@ export interface BenchmarkMetrics {
   falsePositives: number;
   falseNegatives: number;
   precision: number;
+  contractPrecision: number;
+  directConsumerPrecision: number;
   recall: number;
   f1: number;
   testSelectionRecall: number;
