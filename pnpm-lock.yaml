@@ -36,35 +36,7 @@ importers:
         specifier: 8.67.0
         version: 8.67.0(eslint@10.8.1)(typescript@6.0.3)
 
-  apps/cli:
-    dependencies:
-      '@bytesmith/analysis-engine':
-        specifier: workspace:*
-        version: link:../../packages/analysis-engine
-      '@bytesmith/changebench':
-        specifier: workspace:*
-        version: link:../../packages/changebench
-      '@bytesmith/contracts-openapi':
-        specifier: workspace:*
-        version: link:../../packages/contracts-openapi
-      '@bytesmith/contracts-typescript':
-        specifier: workspace:*
-        version: link:../../packages/contracts-typescript
-      '@bytesmith/impact-manifest':
-        specifier: workspace:*
-        version: link:../../packages/impact-manifest
-      '@bytesmith/manifest-validator':
-        specifier: workspace:*
-        version: link:../../packages/manifest-validator
-      '@bytesmith/storage-sqlite':
-        specifier: workspace:*
-        version: link:../../packages/storage-sqlite
-      '@bytesmith/test-intelligence':
-        specifier: workspace:*
-        version: link:../../packages/test-intelligence
-      '@bytesmith/vcs-git':
-        specifier: workspace:*
-        version: link:../../packages/vcs-git
+  apps/cli: {}
 
   apps/github-action: {}
 
@@ -280,17 +252,7 @@ importers:
         specifier: workspace:*
         version: link:../vcs-git
 
-  packages/storage-sqlite:
-    dependencies:
-      '@bytesmith/canonicalization':
-        specifier: workspace:*
-        version: link:../canonicalization
-      '@bytesmith/impact-manifest':
-        specifier: workspace:*
-        version: link:../impact-manifest
-      '@bytesmith/manifest-validator':
-        specifier: workspace:*
-        version: link:../manifest-validator
+  packages/storage-sqlite: {}
 
   packages/test-intelligence:
     dependencies:
