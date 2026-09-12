@@ -12,7 +12,13 @@ import {
   resolvePullRequestContext,
   type PullRequestContext,
 } from "./context.js";
+import {
+  ActionAnalysisError,
+  executeActionAnalysis,
+  parseBooleanInput,
+} from "./analysis.js";
 
+export * from "./analysis.js";
 export * from "./context.js";
 
 export interface ActionEnvironment {
@@ -180,28 +186,42 @@ export async function runAction(
   try {
     const baseInput = core.getInput("base");
     const headInput = core.getInput("head");
+    const useCache = parseBooleanInput(
+      core.getInput("use-cache"),
+      "use-cache",
+      true,
+    );
     const context = await validateActionEnvironment(environment, {
       ...(baseInput ? { base: baseInput } : {}),
       ...(headInput ? { head: headInput } : {}),
     });
-    core.setOutput("conclusion", "not_evaluated");
-    core.setOutput("base-revision", context.pullRequest.baseRevision);
-    core.setOutput("head-revision", context.pullRequest.headRevision);
-    core.setOutput("merge-base", context.pullRequest.mergeBaseRevision);
+    const execution = await executeActionAnalysis(context, {
+      config: core.getInput("config"),
+      database: core.getInput("database"),
+      useCache,
+    });
+    const { manifest } = execution;
+    core.setOutput("conclusion", manifest.status.conclusion);
+    core.setOutput("semantic-digest", manifest.integrity.semanticDigest.value);
+    core.setOutput("base-revision", manifest.comparison.baseRevision);
+    core.setOutput("head-revision", manifest.comparison.headRevision);
+    core.setOutput("merge-base", manifest.comparison.mergeBaseRevision ?? "");
     core.info(
-      "ByteSmith Verify startup validation passed. Analysis is advisory in Verify 0.1.",
+      `ByteSmith ${manifest.status.conclusion}: ${manifest.changes.length} changes, ${manifest.impacts.length} impacts, ${manifest.unknowns.length} unknowns.`,
     );
   } catch (cause) {
     const error =
       cause instanceof ActionError
         ? cause
-        : cause instanceof PullRequestContextError
+        : cause instanceof ActionAnalysisError
           ? new ActionError(cause.code, cause.message, { cause })
-          : new ActionError(
-              "startup_error",
-              "ByteSmith Verify could not start safely.",
-              { cause },
-            );
+          : cause instanceof PullRequestContextError
+            ? new ActionError(cause.code, cause.message, { cause })
+            : new ActionError(
+                "startup_error",
+                "ByteSmith Verify could not start safely.",
+                { cause },
+              );
     core.setOutput("conclusion", "error");
     core.setOutput("error-code", error.code);
     core.setFailed(`${error.code}: ${error.message}`);
@@ -212,5 +232,5 @@ if (
   process.argv[1] &&
   import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href
 ) {
-  await runAction();
+  void runAction();
 }

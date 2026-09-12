@@ -1,0 +1,162 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bytesmith.dev/schemas/impact-types.schema.json",
+  "title": "ByteSmith shared impact types",
+  "type": "object",
+  "$defs": {
+    "nonEmptyString": {
+      "type": "string",
+      "minLength": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "repositoryRelativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*\\\\)(?!.*(?:^|/)\\.\\.?(?:/|$)).+$"
+    },
+    "digest": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["algorithm", "value"],
+          "properties": {
+            "algorithm": { "const": "sha256" },
+            "value": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["algorithm", "value"],
+          "properties": {
+            "algorithm": { "const": "sha512" },
+            "value": { "type": "string", "pattern": "^[a-f0-9]{128}$" }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "sourceLocation": {
+      "type": "object",
+      "required": ["repository", "revision", "path"],
+      "properties": {
+        "repository": { "$ref": "#/$defs/id" },
+        "revision": { "$ref": "#/$defs/nonEmptyString" },
+        "path": { "$ref": "#/$defs/repositoryRelativePath" },
+        "startLine": { "type": "integer", "minimum": 1 },
+        "startColumn": { "type": "integer", "minimum": 1 },
+        "endLine": { "type": "integer", "minimum": 1 },
+        "endColumn": { "type": "integer", "minimum": 1 }
+      },
+      "additionalProperties": false
+    },
+    "producer": {
+      "type": "object",
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "version": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["id", "kind", "producer", "location", "summary"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": {
+          "enum": [
+            "syntax",
+            "type",
+            "call",
+            "import",
+            "contract",
+            "configuration",
+            "coverage",
+            "runtime",
+            "history",
+            "heuristic"
+          ]
+        },
+        "producer": { "$ref": "#/$defs/producer" },
+        "location": { "$ref": "#/$defs/sourceLocation" },
+        "summary": { "$ref": "#/$defs/nonEmptyString" }
+      },
+      "additionalProperties": false
+    },
+    "componentRef": {
+      "type": "object",
+      "required": ["id", "kind", "name"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": {
+          "enum": [
+            "file",
+            "module",
+            "package",
+            "symbol",
+            "api",
+            "graphql",
+            "event",
+            "database",
+            "config",
+            "infrastructure",
+            "test",
+            "service",
+            "repository"
+          ]
+        },
+        "name": { "$ref": "#/$defs/nonEmptyString" },
+        "location": { "$ref": "#/$defs/sourceLocation" }
+      },
+      "additionalProperties": false
+    },
+    "selector": {
+      "type": "object",
+      "properties": {
+        "ruleId": { "$ref": "#/$defs/id" },
+        "subjectId": { "$ref": "#/$defs/id" }
+      },
+      "anyOf": [
+        { "required": ["ruleId"] },
+        { "required": ["subjectId"] }
+      ],
+      "additionalProperties": false
+    },
+    "elevatedApproval": {
+      "type": "object",
+      "required": ["actor", "authority", "approvedAt"],
+      "properties": {
+        "actor": { "$ref": "#/$defs/id" },
+        "authority": { "const": "elevated" },
+        "approvedAt": { "type": "string", "format": "date-time" }
+      },
+      "additionalProperties": false
+    },
+    "confidence": {
+      "enum": ["verified", "high", "medium", "low", "unknown"]
+    },
+    "severity": {
+      "enum": ["info", "low", "medium", "high", "critical"]
+    },
+    "analyzerStatus": {
+      "enum": ["completed", "incomplete", "error", "not_applicable"]
+    },
+    "conclusion": {
+      "enum": ["pass", "warn", "fail", "incomplete", "error"]
+    },
+    "dispositionType": {
+      "enum": ["accepted", "appealed", "waived", "suppressed", "resolved"]
+    },
+    "waiverScope": {
+      "enum": ["finding", "pull_request", "repository", "organization"]
+    },
+    "suspensionScope": {
+      "enum": ["repository", "organization", "global"]
+    }
+  },
+  "additionalProperties": false
+}

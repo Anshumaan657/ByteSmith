@@ -1,0 +1,721 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bytesmith.dev/schemas/impact-manifest.schema.json",
+  "title": "ByteSmith Impact Manifest",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "manifestId",
+    "generatedAt",
+    "engine",
+    "repository",
+    "comparison",
+    "configurationDigest",
+    "status",
+    "scope",
+    "analyzers",
+    "evidence",
+    "changes",
+    "impacts",
+    "tests",
+    "unknowns",
+    "policies",
+    "dispositions",
+    "appeals",
+    "waivers",
+    "suspensions",
+    "auditEvents",
+    "integrity"
+  ],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "manifestId": { "$ref": "impact-types.schema.json#/$defs/id" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "engine": { "$ref": "#/$defs/engine" },
+    "repository": { "$ref": "#/$defs/repository" },
+    "comparison": { "$ref": "#/$defs/comparison" },
+    "configurationDigest": { "$ref": "impact-types.schema.json#/$defs/digest" },
+    "status": { "$ref": "#/$defs/status" },
+    "scope": { "$ref": "#/$defs/scope" },
+    "analyzers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/analyzer" }
+    },
+    "evidence": {
+      "type": "array",
+      "items": { "$ref": "impact-types.schema.json#/$defs/evidence" }
+    },
+    "changes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/change" }
+    },
+    "impacts": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/impact" }
+    },
+    "tests": { "$ref": "#/$defs/testAnalysis" },
+    "unknowns": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/unknown" }
+    },
+    "policies": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/policy" }
+    },
+    "dispositions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/disposition" }
+    },
+    "appeals": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/appeal" }
+    },
+    "waivers": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/waiver" }
+    },
+    "suspensions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/suspension" }
+    },
+    "auditEvents": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/auditEvent" }
+    },
+    "integrity": { "$ref": "#/$defs/integrity" }
+  },
+  "$defs": {
+    "engine": {
+      "type": "object",
+      "required": ["name", "version", "ruleSetVersion"],
+      "properties": {
+        "name": { "const": "ByteSmith" },
+        "version": { "type": "string", "minLength": 1 },
+        "ruleSetVersion": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "repository": {
+      "type": "object",
+      "required": ["id", "name", "vcs"],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "organizationId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "name": { "type": "string", "minLength": 1 },
+        "vcs": { "const": "git" },
+        "remote": { "type": "string", "format": "uri" }
+      },
+      "additionalProperties": false
+    },
+    "comparison": {
+      "type": "object",
+      "required": ["baseRevision", "headRevision"],
+      "properties": {
+        "baseRevision": { "type": "string", "minLength": 1 },
+        "headRevision": { "type": "string", "minLength": 1 },
+        "mergeBaseRevision": { "type": "string", "minLength": 1 },
+        "pullRequestId": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "status": {
+      "type": "object",
+      "required": ["conclusion", "reasons"],
+      "properties": {
+        "conclusion": { "$ref": "impact-types.schema.json#/$defs/conclusion" },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["code", "summary"],
+            "properties": {
+              "code": { "$ref": "impact-types.schema.json#/$defs/id" },
+              "summary": { "type": "string", "minLength": 1 }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "scope": {
+      "type": "object",
+      "required": ["files", "coverage"],
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/changedFile" }
+        },
+        "coverage": { "$ref": "#/$defs/coverage" }
+      },
+      "additionalProperties": false
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "totalChangedFiles",
+        "analyzed",
+        "partiallyAnalyzed",
+        "unsupported",
+        "intentionallyExcluded"
+      ],
+      "properties": {
+        "totalChangedFiles": { "type": "integer", "minimum": 0 },
+        "analyzed": { "type": "integer", "minimum": 0 },
+        "partiallyAnalyzed": { "type": "integer", "minimum": 0 },
+        "unsupported": { "type": "integer", "minimum": 0 },
+        "intentionallyExcluded": { "type": "integer", "minimum": 0 },
+        "changedSymbols": { "type": "integer", "minimum": 0 },
+        "resolvedChangedSymbols": { "type": "integer", "minimum": 0 },
+        "contractsFound": { "type": "integer", "minimum": 0 },
+        "contractsAnalyzed": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "changedFile": {
+      "type": "object",
+      "required": ["path", "changeType", "coverageClass", "analyzerIds"],
+      "properties": {
+        "path": { "$ref": "impact-types.schema.json#/$defs/repositoryRelativePath" },
+        "previousPath": { "$ref": "impact-types.schema.json#/$defs/repositoryRelativePath" },
+        "changeType": {
+          "enum": ["added", "modified", "deleted", "renamed", "copied", "type_changed"]
+        },
+        "coverageClass": {
+          "enum": ["analyzed", "partially_analyzed", "unsupported", "intentionally_excluded"]
+        },
+        "reason": { "type": "string", "minLength": 1 },
+        "analyzerIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "changeType": { "enum": ["renamed", "copied"] } },
+            "required": ["changeType"]
+          },
+          "then": { "required": ["previousPath"] },
+          "else": { "not": { "required": ["previousPath"] } }
+        },
+        {
+          "if": {
+            "properties": {
+              "coverageClass": { "enum": ["unsupported", "intentionally_excluded"] }
+            },
+            "required": ["coverageClass"]
+          },
+          "then": { "required": ["reason"] }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "analyzer": {
+      "type": "object",
+      "required": ["id", "version", "required", "status", "diagnostics"],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "version": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "status": { "$ref": "impact-types.schema.json#/$defs/analyzerStatus" },
+        "durationMs": { "type": "integer", "minimum": 0 },
+        "diagnostics": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "change": {
+      "type": "object",
+      "required": ["id", "kind", "summary", "compatibility", "component", "evidenceIds"],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "kind": {
+          "enum": ["symbol", "contract", "schema", "event", "configuration", "dependency", "infrastructure"]
+        },
+        "summary": { "type": "string", "minLength": 1 },
+        "compatibility": {
+          "enum": ["compatible", "potentially_breaking", "breaking", "unknown"]
+        },
+        "component": { "$ref": "impact-types.schema.json#/$defs/componentRef" },
+        "evidenceIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "impact": {
+      "type": "object",
+      "required": [
+        "id",
+        "ruleId",
+        "ruleVersion",
+        "category",
+        "severity",
+        "confidence",
+        "summary",
+        "sourceChangeIds",
+        "affectedComponents",
+        "evidenceIds"
+      ],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "ruleId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "ruleVersion": { "type": "string", "minLength": 1 },
+        "category": {
+          "enum": ["direct", "transitive", "contract", "test_gap", "policy", "heuristic"]
+        },
+        "severity": { "$ref": "impact-types.schema.json#/$defs/severity" },
+        "confidence": { "$ref": "impact-types.schema.json#/$defs/confidence" },
+        "summary": { "type": "string", "minLength": 1 },
+        "sourceChangeIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "affectedComponents": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/componentRef" },
+          "minItems": 1
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "testAnalysis": {
+      "type": "object",
+      "required": ["recommended", "gaps"],
+      "properties": {
+        "recommended": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/testRecommendation" }
+        },
+        "gaps": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/testGap" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "testRecommendation": {
+      "type": "object",
+      "required": ["id", "test", "command", "reason", "evidenceIds"],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "test": { "$ref": "impact-types.schema.json#/$defs/componentRef" },
+        "command": { "type": "string", "minLength": 1 },
+        "reason": { "type": "string", "minLength": 1 },
+        "evidenceIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "testGap": {
+      "type": "object",
+      "required": ["id", "affectedComponent", "gapKind", "reason", "evidenceIds"],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "affectedComponent": { "$ref": "impact-types.schema.json#/$defs/componentRef" },
+        "gapKind": { "enum": ["not_found", "proven_absent"] },
+        "reason": { "type": "string", "minLength": 1 },
+        "evidenceIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "unknown": {
+      "type": "object",
+      "required": ["id", "type", "summary", "locations", "evidenceIds", "blockingRelevance"],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "type": {
+          "enum": [
+            "unsupported_file",
+            "dynamic_import",
+            "reflection",
+            "generated_code",
+            "missing_repository",
+            "unresolved_symbol",
+            "analyzer_gap",
+            "other"
+          ]
+        },
+        "summary": { "type": "string", "minLength": 1 },
+        "locations": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/sourceLocation" }
+        },
+        "evidenceIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "uniqueItems": true
+        },
+        "blockingRelevance": { "enum": ["none", "possible", "required"] }
+      },
+      "additionalProperties": false
+    },
+    "policy": {
+      "type": "object",
+      "required": [
+        "id",
+        "ruleId",
+        "ruleVersion",
+        "required",
+        "mode",
+        "enabled",
+        "blockingEligible",
+        "ruleState",
+        "result",
+        "findingIds",
+        "analysisGapIds"
+      ],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "ruleId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "ruleVersion": { "type": "string", "minLength": 1 },
+        "required": { "type": "boolean" },
+        "mode": { "enum": ["advisory", "blocking"] },
+        "enabled": { "type": "boolean" },
+        "blockingEligible": { "type": "boolean" },
+        "ruleState": { "enum": ["active", "suspended"] },
+        "suspensionId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "result": { "enum": ["pass", "warn", "fail", "not_evaluated"] },
+        "findingIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "uniqueItems": true
+        },
+        "analysisGapIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "ruleState": { "const": "suspended" } },
+            "required": ["ruleState"]
+          },
+          "then": {
+            "required": ["suspensionId"],
+            "properties": { "result": { "enum": ["warn", "not_evaluated"] } }
+          },
+          "else": { "not": { "required": ["suspensionId"] } }
+        },
+        {
+          "if": {
+            "properties": { "result": { "const": "not_evaluated" } },
+            "required": ["result"]
+          },
+          "then": {
+            "properties": { "analysisGapIds": { "type": "array", "minItems": 1 } }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "disposition": {
+      "type": "object",
+      "required": ["id", "findingId", "type", "actor", "reason", "createdAt", "sourceId", "auditEventIds"],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "findingId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "type": { "$ref": "impact-types.schema.json#/$defs/dispositionType" },
+        "actor": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "reason": { "type": "string", "minLength": 1 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "sourceId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "auditEventIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "additionalProperties": false
+    },
+    "appeal": {
+      "type": "object",
+      "required": ["id", "findingId", "status", "actor", "reason", "createdAt", "auditEventIds"],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "findingId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "status": { "enum": ["open", "under_review", "terminal"] },
+        "actor": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "reason": { "type": "string", "minLength": 1 },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "outcome": { "enum": ["upheld", "rejected", "superseded"] },
+        "adjudicatedBy": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "adjudicatedAt": { "type": "string", "format": "date-time" },
+        "rationale": { "type": "string", "minLength": 1 },
+        "supersedingFindingId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "auditEventIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "status": { "const": "terminal" } },
+            "required": ["status"]
+          },
+          "then": {
+            "required": ["outcome", "adjudicatedBy", "adjudicatedAt", "rationale"]
+          },
+          "else": {
+            "not": {
+              "anyOf": [
+                { "required": ["outcome"] },
+                { "required": ["adjudicatedBy"] },
+                { "required": ["adjudicatedAt"] },
+                { "required": ["rationale"] },
+                { "required": ["supersedingFindingId"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "outcome": { "const": "superseded" } },
+            "required": ["outcome"]
+          },
+          "then": { "required": ["supersedingFindingId"] },
+          "else": { "not": { "required": ["supersedingFindingId"] } }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "waiver": {
+      "type": "object",
+      "required": [
+        "id",
+        "findingId",
+        "reason",
+        "actor",
+        "createdAt",
+        "startsAt",
+        "expiresAt",
+        "scope",
+        "status",
+        "auditEventIds"
+      ],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "findingId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "reason": { "type": "string", "minLength": 1 },
+        "actor": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "startsAt": { "type": "string", "format": "date-time" },
+        "expiresAt": { "type": "string", "format": "date-time" },
+        "scope": { "$ref": "impact-types.schema.json#/$defs/waiverScope" },
+        "status": { "enum": ["pending", "active", "expired", "revoked"] },
+        "pullRequestId": { "type": "string", "minLength": 1 },
+        "repositoryId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "organizationId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "selector": { "$ref": "impact-types.schema.json#/$defs/selector" },
+        "approval": { "$ref": "impact-types.schema.json#/$defs/elevatedApproval" },
+        "auditEventIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "scope": { "const": "finding" } }, "required": ["scope"] },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["pullRequestId"] },
+                { "required": ["repositoryId"] },
+                { "required": ["organizationId"] },
+                { "required": ["selector"] },
+                { "required": ["approval"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": { "properties": { "scope": { "const": "pull_request" } }, "required": ["scope"] },
+          "then": {
+            "required": ["pullRequestId"],
+            "not": {
+              "anyOf": [
+                { "required": ["repositoryId"] },
+                { "required": ["organizationId"] },
+                { "required": ["selector"] },
+                { "required": ["approval"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": { "properties": { "scope": { "const": "repository" } }, "required": ["scope"] },
+          "then": {
+            "required": ["repositoryId", "selector"],
+            "not": {
+              "anyOf": [
+                { "required": ["pullRequestId"] },
+                { "required": ["organizationId"] },
+                { "required": ["approval"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": { "properties": { "scope": { "const": "organization" } }, "required": ["scope"] },
+          "then": {
+            "required": ["organizationId", "selector", "approval"],
+            "not": {
+              "anyOf": [
+                { "required": ["pullRequestId"] },
+                { "required": ["repositoryId"] }
+              ]
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "suspension": {
+      "type": "object",
+      "required": [
+        "id",
+        "ruleId",
+        "ruleVersion",
+        "scope",
+        "status",
+        "reason",
+        "actor",
+        "createdAt",
+        "reinstatementCriteria",
+        "evidenceIds",
+        "auditEventIds"
+      ],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "ruleId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "ruleVersion": { "type": "string", "minLength": 1 },
+        "scope": { "$ref": "impact-types.schema.json#/$defs/suspensionScope" },
+        "status": { "enum": ["active", "reinstated"] },
+        "repositoryId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "organizationId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "reason": { "type": "string", "minLength": 1 },
+        "actor": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "reinstatedAt": { "type": "string", "format": "date-time" },
+        "reinstatedBy": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "reinstatementCriteria": { "type": "string", "minLength": 1 },
+        "evidenceIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "auditEventIds": {
+          "type": "array",
+          "items": { "$ref": "impact-types.schema.json#/$defs/id" },
+          "minItems": 1,
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "scope": { "const": "repository" } }, "required": ["scope"] },
+          "then": {
+            "required": ["repositoryId"],
+            "not": { "required": ["organizationId"] }
+          }
+        },
+        {
+          "if": { "properties": { "scope": { "const": "organization" } }, "required": ["scope"] },
+          "then": {
+            "required": ["organizationId"],
+            "not": { "required": ["repositoryId"] }
+          }
+        },
+        {
+          "if": { "properties": { "scope": { "const": "global" } }, "required": ["scope"] },
+          "then": {
+            "not": {
+              "anyOf": [
+                { "required": ["repositoryId"] },
+                { "required": ["organizationId"] }
+              ]
+            }
+          }
+        },
+        {
+          "if": { "properties": { "status": { "const": "reinstated" } }, "required": ["status"] },
+          "then": { "required": ["reinstatedAt", "reinstatedBy"] },
+          "else": {
+            "not": {
+              "anyOf": [
+                { "required": ["reinstatedAt"] },
+                { "required": ["reinstatedBy"] }
+              ]
+            }
+          }
+        }
+      ],
+      "additionalProperties": false
+    },
+    "auditEvent": {
+      "type": "object",
+      "required": ["id", "entityType", "entityId", "action", "actor", "occurredAt"],
+      "properties": {
+        "id": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "entityType": { "enum": ["appeal", "waiver", "suspension", "disposition", "policy"] },
+        "entityId": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "action": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "actor": { "$ref": "impact-types.schema.json#/$defs/id" },
+        "occurredAt": { "type": "string", "format": "date-time" },
+        "fromStatus": { "type": "string", "minLength": 1 },
+        "toStatus": { "type": "string", "minLength": 1 },
+        "summary": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "integrity": {
+      "type": "object",
+      "required": ["canonicalization", "semanticDigest"],
+      "properties": {
+        "canonicalization": { "const": "bytesmith-c14n-1" },
+        "semanticDigest": { "$ref": "impact-types.schema.json#/$defs/digest" },
+        "signature": { "type": "string", "minLength": 1 },
+        "keyId": { "type": "string", "minLength": 1 }
+      },
+      "dependentRequired": {
+        "signature": ["keyId"],
+        "keyId": ["signature"]
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

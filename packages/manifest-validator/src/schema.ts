@@ -31,8 +31,15 @@ async function readSchema(directory: string, name: string): Promise<object> {
   ) as object;
 }
 
+function defaultSchemaDirectory(): string {
+  const bundledDirectory = process.env.BYTESMITH_SCHEMA_DIRECTORY;
+  return bundledDirectory
+    ? path.resolve(bundledDirectory)
+    : fileURLToPath(new URL("../../../schemas", import.meta.url));
+}
+
 export async function createImpactManifestSchemaValidator(
-  schemaDirectory = fileURLToPath(new URL("../../../schemas", import.meta.url)),
+  schemaDirectory = defaultSchemaDirectory(),
 ): Promise<ImpactManifestSchemaValidator> {
   const [impactTypes, impactManifest] = await Promise.all([
     readSchema(schemaDirectory, "impact-types.schema.json"),

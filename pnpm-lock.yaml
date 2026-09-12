@@ -71,6 +71,12 @@ importers:
       '@actions/core':
         specifier: 1.11.1
         version: 1.11.1
+      '@bytesmith/analysis-engine':
+        specifier: workspace:*
+        version: link:../../packages/analysis-engine
+      '@bytesmith/impact-manifest':
+        specifier: workspace:*
+        version: link:../../packages/impact-manifest
       '@bytesmith/vcs-git':
         specifier: workspace:*
         version: link:../../packages/vcs-git

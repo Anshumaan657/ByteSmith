@@ -6,5 +6,9 @@
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],
-  "references": [{ "path": "../../packages/vcs-git" }]
+  "references": [
+    { "path": "../../packages/analysis-engine" },
+    { "path": "../../packages/impact-manifest" },
+    { "path": "../../packages/vcs-git" }
+  ]
 }

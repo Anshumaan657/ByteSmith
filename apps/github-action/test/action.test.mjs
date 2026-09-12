@@ -5,7 +5,14 @@ import path from "node:path";
 import { execFile } from "node:child_process";
 import test from "node:test";
 import { promisify } from "node:util";
-import { validateActionEnvironment, ActionError } from "../dist/index.js";
+import {
+  executeActionAnalysis,
+  parseBooleanInput,
+  validateActionEnvironment,
+  ActionAnalysisError,
+  ActionError,
+} from "../dist/index.js";
+import { analyzeRepository } from "../../../packages/analysis-engine/dist/index.js";
 
 const actionRoot = path.resolve(new URL("..", import.meta.url).pathname);
 const execFileAsync = promisify(execFile);
@@ -288,4 +295,147 @@ test("ActionError preserves cause", () => {
   const cause = new Error("root cause");
   const error = new ActionError("test_code", "Wrapper", { cause });
   assert.equal(error.cause, cause);
+});
+
+// --- Shared analysis-engine integration ---
+
+test("boolean Action inputs are strict and deterministic", () => {
+  assert.equal(parseBooleanInput("", "use-cache", true), true);
+  assert.equal(parseBooleanInput(" FALSE ", "use-cache", true), false);
+  assert.throws(() => parseBooleanInput("yes", "use-cache", true), {
+    code: "invalid_input",
+  });
+});
+
+test("Action analysis rejects configuration paths outside the checkout", async () => {
+  const startup = {
+    workspace: path.resolve(os.tmpdir(), "bytesmith-workspace"),
+    pullRequest: {
+      number: 1,
+      baseRevision: "a".repeat(40),
+      headRevision: "b".repeat(40),
+      mergeBaseRevision: "a".repeat(40),
+    },
+  };
+  await assert.rejects(
+    () =>
+      executeActionAnalysis(startup, {
+        config: "../config.json",
+        useCache: false,
+      }),
+    (error) =>
+      error instanceof ActionAnalysisError && error.code === "invalid_input",
+  );
+});
+
+test("Action and direct engine execution produce the same semantic manifest", async (t) => {
+  const repository = await makeCleanRepository(t);
+  await fs.writeFile(
+    path.join(repository, "package.json"),
+    JSON.stringify({ name: "action-parity", private: true, type: "module" }),
+  );
+  await fs.writeFile(
+    path.join(repository, "tsconfig.json"),
+    JSON.stringify({
+      compilerOptions: {
+        strict: true,
+        noEmit: true,
+        target: "ES2022",
+        module: "ESNext",
+        moduleResolution: "Bundler",
+      },
+      include: ["src/**/*.ts"],
+    }),
+  );
+  await fs.mkdir(path.join(repository, "src"));
+  await fs.writeFile(
+    path.join(repository, "src", "api.ts"),
+    "export function greet(name: string): string { return name; }\n",
+  );
+  await git(repository, "add", "--all");
+  await git(repository, "commit", "--quiet", "-m", "base contract");
+  const base = await git(repository, "rev-parse", "HEAD");
+  await fs.writeFile(
+    path.join(repository, "src", "api.ts"),
+    "export function greet(name: number): string { return String(name); }\n",
+  );
+  await git(repository, "add", "--all");
+  await git(repository, "commit", "--quiet", "-m", "change contract");
+  const head = await git(repository, "rev-parse", "HEAD");
+
+  const eventDirectory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "bytesmith-action-parity-event-"),
+  );
+  t.after(() => fs.rm(eventDirectory, { recursive: true, force: true }));
+  const eventPath = path.join(eventDirectory, "event.json");
+  await fs.writeFile(
+    eventPath,
+    JSON.stringify({
+      pull_request: {
+        number: 42,
+        base: { sha: base },
+        head: { sha: head, repo: { full_name: "example/project" } },
+      },
+    }),
+  );
+  const startup = await validateActionEnvironment({
+    GITHUB_ACTIONS: "true",
+    GITHUB_EVENT_NAME: "pull_request",
+    GITHUB_EVENT_PATH: eventPath,
+    GITHUB_REPOSITORY: "example/project",
+    GITHUB_SHA: head,
+    GITHUB_WORKSPACE: repository,
+  });
+  const action = await executeActionAnalysis(startup, { useCache: false });
+  const bundledAction = await import(
+    new URL("../dist/bundle/index.js", import.meta.url)
+  );
+  const bundled = await bundledAction.executeActionAnalysis(startup, {
+    useCache: false,
+  });
+  const direct = await analyzeRepository({
+    repositoryPath: repository,
+    base,
+    head,
+    useCache: false,
+    pullRequestId: "42",
+  });
+
+  assert.equal(action.manifest.comparison.headRevision, head);
+  assert.equal(
+    action.manifest.integrity.semanticDigest.value,
+    direct.manifest.integrity.semanticDigest.value,
+  );
+  assert.equal(
+    bundled.manifest.integrity.semanticDigest.value,
+    direct.manifest.integrity.semanticDigest.value,
+    JSON.stringify(
+      {
+        bundled: {
+          conclusion: bundled.manifest.status,
+          analyzers: bundled.manifest.analyzers,
+          unknowns: bundled.manifest.unknowns,
+        },
+        direct: {
+          conclusion: direct.manifest.status,
+          analyzers: direct.manifest.analyzers,
+          unknowns: direct.manifest.unknowns,
+        },
+      },
+      undefined,
+      2,
+    ),
+  );
+  assert.deepEqual(
+    JSON.parse(
+      JSON.stringify(action.manifest, (key, value) =>
+        key === "generatedAt" || key === "durationMs" ? undefined : value,
+      ),
+    ),
+    JSON.parse(
+      JSON.stringify(direct.manifest, (key, value) =>
+        key === "generatedAt" || key === "durationMs" ? undefined : value,
+      ),
+    ),
+  );
 });
