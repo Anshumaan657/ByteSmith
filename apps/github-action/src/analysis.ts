@@ -13,6 +13,7 @@ export interface ActionAnalysisInputs {
   config?: string;
   database?: string;
   useCache: boolean;
+  signal?: AbortSignal;
 }
 
 export interface ActionAnalysisExecution {
@@ -110,6 +111,7 @@ export async function executeActionAnalysis(
       ...(databasePath ? { databasePath } : {}),
       useCache: inputs.useCache,
       pullRequestId: String(startup.pullRequest.number),
+      ...(inputs.signal ? { signal: inputs.signal } : {}),
     });
     if (
       result.manifest.comparison.baseRevision !==
@@ -133,9 +135,14 @@ export async function executeActionAnalysis(
   } catch (cause) {
     if (cause instanceof ActionAnalysisError) throw cause;
     const code =
-      cause && typeof cause === "object" && "code" in cause
-        ? String(cause.code)
-        : "analysis_error";
+      cause instanceof DOMException && cause.name === "AbortError"
+        ? "cancelled"
+        : cause &&
+            typeof cause === "object" &&
+            "code" in cause &&
+            typeof cause.code === "string"
+          ? cause.code
+          : "analysis_error";
     throw new ActionAnalysisError(
       code,
       cause instanceof Error

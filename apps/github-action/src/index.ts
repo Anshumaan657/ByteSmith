@@ -36,6 +36,7 @@ export interface ActionEnvironment {
   GITHUB_SHA?: string;
   GITHUB_WORKSPACE?: string;
   GITHUB_API_URL?: string;
+  GITHUB_SERVER_URL?: string;
   GITHUB_STEP_SUMMARY?: string;
 }
 
@@ -189,8 +190,11 @@ export async function validateActionEnvironment(
   };
 }
 
-async function writeJobSummary(report: string): Promise<void> {
-  const summaryPath = process.env.GITHUB_STEP_SUMMARY;
+async function writeJobSummary(
+  report: string,
+  environment: ActionEnvironment,
+): Promise<void> {
+  const summaryPath = environment.GITHUB_STEP_SUMMARY;
   if (!summaryPath) return;
   try {
     const { appendFile } = await import("node:fs/promises");
@@ -216,6 +220,10 @@ export async function runAction(
   let reportState: "created" | "updated" | "summary" | "skipped" = "skipped";
   let reportError: Error | undefined;
   let manifest: ImpactManifest | undefined;
+  const cancellation = new AbortController();
+  const cancel = () => cancellation.abort();
+  process.once("SIGINT", cancel);
+  process.once("SIGTERM", cancel);
 
   try {
     const baseInput = core.getInput("base");
@@ -236,6 +244,7 @@ export async function runAction(
       config: core.getInput("config"),
       database: core.getInput("database"),
       useCache,
+      signal: cancellation.signal,
     });
     manifest = execution.manifest;
 
@@ -251,7 +260,11 @@ export async function runAction(
     );
 
     if (publish) {
-      const report = renderAdvisoryReport(manifest, context.repository);
+      const report = renderAdvisoryReport(
+        manifest,
+        context.repository,
+        environment.GITHUB_SERVER_URL,
+      );
       const apiUrl = environment.GITHUB_API_URL;
       try {
         const result = await publishAdvisoryReport({
@@ -274,7 +287,7 @@ export async function runAction(
             core.warning(
               `ByteSmith could not publish the advisory report (${cause.code}); writing to job summary instead.`,
             );
-            await writeJobSummary(report);
+            await writeJobSummary(report, environment);
             reportState = "summary";
           } else if (cause.code === "stale_analysis") {
             core.warning(cause.message);
@@ -283,14 +296,14 @@ export async function runAction(
             core.warning(
               `ByteSmith report publication failed (${cause.code}); writing to job summary instead.`,
             );
-            await writeJobSummary(report);
+            await writeJobSummary(report, environment);
             reportState = "summary";
           }
         } else {
           core.warning(
             "ByteSmith report publication failed unexpectedly; writing to job summary instead.",
           );
-          await writeJobSummary(report);
+          await writeJobSummary(report, environment);
           reportState = "summary";
         }
       }
@@ -339,6 +352,9 @@ export async function runAction(
       core.setFailed(`${error.code}: ${error.message}`);
     }
     return;
+  } finally {
+    process.removeListener("SIGINT", cancel);
+    process.removeListener("SIGTERM", cancel);
   }
 
   core.setOutput("report-state", reportState);

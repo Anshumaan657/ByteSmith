@@ -2,6 +2,7 @@ import type { ImpactManifest } from "@bytesmith/impact-manifest";
 
 export const REPORT_MARKER = "<!-- bytesmith-verify:report:v1 -->";
 const MAX_ITEMS = 25;
+const MAX_REPORT_LENGTH = 60_000;
 
 export interface GitHubComment {
   id: number;
@@ -50,13 +51,14 @@ function evidenceLink(
   repository: string,
   head: string,
   evidence: ImpactManifest["evidence"][number],
+  serverUrl: string,
 ): string {
   const path = evidence.location.path
     .split("/")
     .map(encodeURIComponent)
     .join("/");
   const line = evidence.location.startLine;
-  return `https://github.com/${repository}/blob/${head}/${path}${line ? `#L${line}${evidence.location.endLine && evidence.location.endLine !== line ? `-L${evidence.location.endLine}` : ""}` : ""}`;
+  return `${serverUrl}/${repository}/blob/${head}/${path}${line ? `#L${line}${evidence.location.endLine && evidence.location.endLine !== line ? `-L${evidence.location.endLine}` : ""}` : ""}`;
 }
 
 function section(
@@ -79,6 +81,7 @@ function section(
 export function renderAdvisoryReport(
   manifest: ImpactManifest,
   repository: string,
+  serverUrl = "https://github.com",
 ): string {
   const head = manifest.comparison.headRevision;
   const evidence = new Map(manifest.evidence.map((item) => [item.id, item]));
@@ -91,7 +94,7 @@ export function renderAdvisoryReport(
       .slice(0, 3)
       .map(
         (item, index) =>
-          `[evidence ${index + 1}](${evidenceLink(repository, head, item)})`,
+          `[evidence ${index + 1}](${evidenceLink(repository, head, item, serverUrl.replace(/\/$/u, ""))})`,
       )
       .join(", ");
   const breaking = manifest.changes
@@ -136,7 +139,7 @@ export function renderAdvisoryReport(
         ? "⚠️"
         : "🛑";
 
-  return [
+  const report = [
     REPORT_MARKER,
     `## ${icon} ByteSmith Verify: ${manifest.status.conclusion.toUpperCase()}`,
     "",
@@ -178,6 +181,9 @@ export function renderAdvisoryReport(
     ),
     `<sub>Manifest ${safe(manifest.manifestId)} · Engine ${safe(manifest.engine.version)} · Rule set ${safe(manifest.engine.ruleSetVersion)}</sub>`,
   ].join("\n");
+  if (report.length <= MAX_REPORT_LENGTH) return report;
+  const suffix = "\n\n_Report truncated to fit GitHub's comment limit._";
+  return `${report.slice(0, MAX_REPORT_LENGTH - suffix.length)}${suffix}`;
 }
 
 interface PublishOptions {

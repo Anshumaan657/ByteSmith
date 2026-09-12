@@ -37,22 +37,44 @@ function makeManifest(overrides = {}) {
       },
     },
     analyzers: [
-      { id: "bytesmith.typescript", version: "0.1.0", required: true, status: "completed", diagnostics: [] },
-      { id: "bytesmith.openapi", version: "0.1.0", required: false, status: "not_applicable", diagnostics: [] },
+      {
+        id: "bytesmith.typescript",
+        version: "0.1.0",
+        required: true,
+        status: "completed",
+        diagnostics: [],
+      },
+      {
+        id: "bytesmith.openapi",
+        version: "0.1.0",
+        required: false,
+        status: "not_applicable",
+        diagnostics: [],
+      },
     ],
     evidence: [
       {
         id: "ev-1",
         kind: "type",
         producer: { id: "bytesmith.typescript", version: "0.1.0" },
-        location: { repository: "repo-1", revision: "b".repeat(40), path: "src/api.ts", startLine: 10 },
+        location: {
+          repository: "repo-1",
+          revision: "b".repeat(40),
+          path: "src/api.ts",
+          startLine: 10,
+        },
         summary: "Type change evidence",
       },
       {
         id: "ev-2",
         kind: "contract",
         producer: { id: "bytesmith.typescript", version: "0.1.0" },
-        location: { repository: "repo-1", revision: "b".repeat(40), path: "src/contract.ts", startLine: 20 },
+        location: {
+          repository: "repo-1",
+          revision: "b".repeat(40),
+          path: "src/contract.ts",
+          startLine: 20,
+        },
         summary: "Contract evidence",
       },
     ],
@@ -101,7 +123,11 @@ function makeManifest(overrides = {}) {
       gaps: [
         {
           id: "gap-1",
-          affectedComponent: { id: "comp-4", kind: "symbol", name: "uncovered" },
+          affectedComponent: {
+            id: "comp-4",
+            kind: "symbol",
+            name: "uncovered",
+          },
           gapKind: "not_found",
           reason: "No test found for uncovered function",
           evidenceIds: ["ev-2"],
@@ -113,7 +139,14 @@ function makeManifest(overrides = {}) {
         id: "unk-1",
         type: "dynamic_import",
         summary: "Dynamic import prevents analysis",
-        locations: [{ repository: "repo-1", revision: "b".repeat(40), path: "src/loader.ts", startLine: 5 }],
+        locations: [
+          {
+            repository: "repo-1",
+            revision: "b".repeat(40),
+            path: "src/loader.ts",
+            startLine: 5,
+          },
+        ],
         evidenceIds: [],
         blockingRelevance: "possible",
       },
@@ -216,8 +249,20 @@ test("renderAdvisoryReport includes unknowns", () => {
 test("renderAdvisoryReport includes analyzer health", () => {
   const manifest = makeManifest({
     analyzers: [
-      { id: "bytesmith.typescript", version: "0.1.0", required: true, status: "completed", diagnostics: [] },
-      { id: "bytesmith.openapi", version: "0.1.0", required: false, status: "error", diagnostics: ["Failed to parse OpenAPI spec"] },
+      {
+        id: "bytesmith.typescript",
+        version: "0.1.0",
+        required: true,
+        status: "completed",
+        diagnostics: [],
+      },
+      {
+        id: "bytesmith.openapi",
+        version: "0.1.0",
+        required: false,
+        status: "error",
+        diagnostics: ["Failed to parse OpenAPI spec"],
+      },
     ],
   });
   const report = renderAdvisoryReport(manifest, "example/test-repo");
@@ -240,7 +285,15 @@ test("renderAdvisoryReport escapes markdown and HTML", () => {
     impacts: [],
     tests: { recommended: [], gaps: [] },
     unknowns: [],
-    analyzers: [{ id: "bytesmith.typescript", version: "0.1.0", required: true, status: "completed", diagnostics: [] }],
+    analyzers: [
+      {
+        id: "bytesmith.typescript",
+        version: "0.1.0",
+        required: true,
+        status: "completed",
+        diagnostics: [],
+      },
+    ],
   });
   const report = renderAdvisoryReport(manifest, "example/test-repo");
   assert.ok(report.includes("&lt;script&gt;alert(1)&lt;/script&gt;"));
@@ -270,18 +323,50 @@ test("renderAdvisoryReport evidence links use exact head commit", () => {
   assert.ok(!report.includes("HEAD"));
 });
 
-test("renderAdvisoryReport shows conclusion icon", () => {
-  const passManifest = makeManifest({ status: { conclusion: "pass", reasons: [] } });
-  const warnManifest = makeManifest({ status: { conclusion: "warn", reasons: [] } });
-  const failManifest = makeManifest({ status: { conclusion: "fail", reasons: [] } });
-  const incompleteManifest = makeManifest({ status: { conclusion: "incomplete", reasons: [] } });
-  const errorManifest = makeManifest({ status: { conclusion: "error", reasons: [] } });
+test("renderAdvisoryReport uses the configured GitHub server for evidence", () => {
+  const report = renderAdvisoryReport(
+    makeManifest(),
+    "example/test-repo",
+    "https://ghe.example.com/",
+  );
+  assert.ok(report.includes("https://ghe.example.com/example/test-repo/blob/"));
+  assert.ok(!report.includes("https://github.com/example/test-repo/blob/"));
+});
 
-  assert.ok(renderAdvisoryReport(passManifest, "example/test-repo").includes("✅"));
-  assert.ok(renderAdvisoryReport(warnManifest, "example/test-repo").includes("⚠️"));
-  assert.ok(renderAdvisoryReport(failManifest, "example/test-repo").includes("🛑"));
-  assert.ok(renderAdvisoryReport(incompleteManifest, "example/test-repo").includes("🛑"));
-  assert.ok(renderAdvisoryReport(errorManifest, "example/test-repo").includes("🛑"));
+test("renderAdvisoryReport shows conclusion icon", () => {
+  const passManifest = makeManifest({
+    status: { conclusion: "pass", reasons: [] },
+  });
+  const warnManifest = makeManifest({
+    status: { conclusion: "warn", reasons: [] },
+  });
+  const failManifest = makeManifest({
+    status: { conclusion: "fail", reasons: [] },
+  });
+  const incompleteManifest = makeManifest({
+    status: { conclusion: "incomplete", reasons: [] },
+  });
+  const errorManifest = makeManifest({
+    status: { conclusion: "error", reasons: [] },
+  });
+
+  assert.ok(
+    renderAdvisoryReport(passManifest, "example/test-repo").includes("✅"),
+  );
+  assert.ok(
+    renderAdvisoryReport(warnManifest, "example/test-repo").includes("⚠️"),
+  );
+  assert.ok(
+    renderAdvisoryReport(failManifest, "example/test-repo").includes("🛑"),
+  );
+  assert.ok(
+    renderAdvisoryReport(incompleteManifest, "example/test-repo").includes(
+      "🛑",
+    ),
+  );
+  assert.ok(
+    renderAdvisoryReport(errorManifest, "example/test-repo").includes("🛑"),
+  );
 });
 
 test("renderAdvisoryReport includes engine and rule set versions", () => {
@@ -297,7 +382,15 @@ test("renderAdvisoryReport handles empty sections gracefully", () => {
     impacts: [],
     tests: { recommended: [], gaps: [] },
     unknowns: [],
-    analyzers: [{ id: "bytesmith.typescript", version: "0.1.0", required: true, status: "completed", diagnostics: [] }],
+    analyzers: [
+      {
+        id: "bytesmith.typescript",
+        version: "0.1.0",
+        required: true,
+        status: "completed",
+        diagnostics: [],
+      },
+    ],
   });
   const report = renderAdvisoryReport(manifest, "example/test-repo");
   assert.ok(report.includes("No breaking contract change was identified"));
@@ -310,7 +403,14 @@ test("renderAdvisoryReport handles empty sections gracefully", () => {
 
 test("publishAdvisoryReport requires a token", async () => {
   await assert.rejects(
-    () => publishAdvisoryReport({ repository: "example/test", pullRequestNumber: 1, analyzedHead: "b".repeat(40), token: "", body: "test" }),
+    () =>
+      publishAdvisoryReport({
+        repository: "example/test",
+        pullRequestNumber: 1,
+        analyzedHead: "b".repeat(40),
+        token: "",
+        body: "test",
+      }),
     { code: "missing_github_token" },
   );
 });
@@ -318,7 +418,10 @@ test("publishAdvisoryReport requires a token", async () => {
 test("publishAdvisoryReport rejects stale head", async () => {
   const mockFetch = async (url) => {
     if (url.includes("/pulls/1")) {
-      return { ok: true, json: async () => ({ head: { sha: "c".repeat(40) } }) };
+      return {
+        ok: true,
+        json: async () => ({ head: { sha: "c".repeat(40) } }),
+      };
     }
     if (url.includes("/comments")) {
       return { ok: true, json: async () => [] };
@@ -344,9 +447,15 @@ test("publishAdvisoryReport creates new comment when none exists", async () => {
   const createdComment = { id: 123 };
   const mockFetch = async (url, init) => {
     if (url.includes("/pulls/1")) {
-      return { ok: true, json: async () => ({ head: { sha: "b".repeat(40) } }) };
+      return {
+        ok: true,
+        json: async () => ({ head: { sha: "b".repeat(40) } }),
+      };
     }
-    if (url.includes("/issues/1/comments") && (!init?.method || init?.method === "GET")) {
+    if (
+      url.includes("/issues/1/comments") &&
+      (!init?.method || init?.method === "GET")
+    ) {
       return { ok: true, json: async () => [] };
     }
     if (url.includes("/issues/1/comments") && init?.method === "POST") {
@@ -369,13 +478,23 @@ test("publishAdvisoryReport creates new comment when none exists", async () => {
 });
 
 test("publishAdvisoryReport updates existing bot comment", async () => {
-  const existingComment = { id: 456, user: { type: "Bot" }, body: `${REPORT_MARKER} old` };
+  const existingComment = {
+    id: 456,
+    user: { type: "Bot" },
+    body: `${REPORT_MARKER} old`,
+  };
   const updatedComment = { id: 456 };
   const mockFetch = async (url, init) => {
     if (url.includes("/pulls/1")) {
-      return { ok: true, json: async () => ({ head: { sha: "b".repeat(40) } }) };
+      return {
+        ok: true,
+        json: async () => ({ head: { sha: "b".repeat(40) } }),
+      };
     }
-    if (url.includes("/issues/1/comments") && (!init?.method || init?.method === "GET")) {
+    if (
+      url.includes("/issues/1/comments") &&
+      (!init?.method || init?.method === "GET")
+    ) {
       return { ok: true, json: async () => [existingComment] };
     }
     if (url.includes("/issues/comments/456") && init?.method === "PATCH") {
@@ -399,12 +518,22 @@ test("publishAdvisoryReport updates existing bot comment", async () => {
 
 test("publishAdvisoryReport finds bot comment among others", async () => {
   const userComment = { id: 111, user: { type: "User" }, body: "User comment" };
-  const botComment = { id: 222, user: { type: "Bot" }, body: `${REPORT_MARKER} old` };
+  const botComment = {
+    id: 222,
+    user: { type: "Bot" },
+    body: `${REPORT_MARKER} old`,
+  };
   const mockFetch = async (url, init) => {
     if (url.includes("/pulls/1")) {
-      return { ok: true, json: async () => ({ head: { sha: "b".repeat(40) } }) };
+      return {
+        ok: true,
+        json: async () => ({ head: { sha: "b".repeat(40) } }),
+      };
     }
-    if (url.includes("/issues/1/comments") && (!init?.method || init?.method === "GET")) {
+    if (
+      url.includes("/issues/1/comments") &&
+      (!init?.method || init?.method === "GET")
+    ) {
       return { ok: true, json: async () => [userComment, botComment] };
     }
     if (url.includes("/issues/comments/222") && init?.method === "PATCH") {
@@ -434,9 +563,15 @@ test("publishAdvisoryReport handles pagination", async () => {
   }));
   const mockFetch = async (url, init) => {
     if (url.includes("/pulls/1")) {
-      return { ok: true, json: async () => ({ head: { sha: "b".repeat(40) } }) };
+      return {
+        ok: true,
+        json: async () => ({ head: { sha: "b".repeat(40) } }),
+      };
     }
-    if (url.includes("/issues/1/comments") && (!init?.method || init?.method === "GET")) {
+    if (
+      url.includes("/issues/1/comments") &&
+      (!init?.method || init?.method === "GET")
+    ) {
       return { ok: true, json: async () => comments };
     }
     if (url.includes("/issues/comments/100") && init?.method === "PATCH") {
@@ -461,10 +596,17 @@ test("publishAdvisoryReport handles pagination", async () => {
 test("publishAdvisoryReport handles 403 permission denied", async () => {
   const mockFetch = async (url) => {
     if (url.includes("/pulls/1")) {
-      return { ok: true, json: async () => ({ head: { sha: "b".repeat(40) } }) };
+      return {
+        ok: true,
+        json: async () => ({ head: { sha: "b".repeat(40) } }),
+      };
     }
     if (url.includes("/issues/1/comments")) {
-      return { ok: false, status: 403, json: async () => ({ message: "Forbidden" }) };
+      return {
+        ok: false,
+        status: 403,
+        json: async () => ({ message: "Forbidden" }),
+      };
     }
     return { ok: true, json: async () => ({}) };
   };
@@ -505,7 +647,11 @@ test("publishAdvisoryReport handles network errors", async () => {
 test("publishAdvisoryReport handles malformed API responses", async () => {
   const mockFetch = async (url) => {
     if (url.includes("/pulls/1")) {
-      return { ok: false, status: 500, json: async () => ({ message: "Internal Server Error" }) };
+      return {
+        ok: false,
+        status: 500,
+        json: async () => ({ message: "Internal Server Error" }),
+      };
     }
     return { ok: true, json: async () => ({}) };
   };
@@ -528,9 +674,15 @@ test("publishAdvisoryReport supports GitHub Enterprise URLs", async () => {
   const mockFetch = async (url, init) => {
     if (url.includes("ghe.example.com")) {
       if (url.includes("/pulls/1")) {
-        return { ok: true, json: async () => ({ head: { sha: "b".repeat(40) } }) };
+        return {
+          ok: true,
+          json: async () => ({ head: { sha: "b".repeat(40) } }),
+        };
       }
-      if (url.includes("/issues/1/comments") && (!init?.method || init?.method === "GET")) {
+      if (
+        url.includes("/issues/1/comments") &&
+        (!init?.method || init?.method === "GET")
+      ) {
         return { ok: true, json: async () => [] };
       }
       if (url.includes("/issues/1/comments") && init?.method === "POST") {
@@ -555,7 +707,9 @@ test("publishAdvisoryReport supports GitHub Enterprise URLs", async () => {
 });
 
 test("GitHubReportError has correct properties", () => {
-  const error = new GitHubReportError("test_code", "Test message", { status: 404 });
+  const error = new GitHubReportError("test_code", "Test message", {
+    status: 404,
+  });
   assert.equal(error.name, "GitHubReportError");
   assert.equal(error.code, "test_code");
   assert.equal(error.status, 404);
