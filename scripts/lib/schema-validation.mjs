@@ -10,6 +10,7 @@ export async function loadSchemas(root) {
     "impact-manifest.schema.json",
     "changebench-case.schema.json",
     "bytesmith.config.schema.json",
+    "validation-portfolio.schema.json",
   ];
   const schemas = {};
   for (const name of names) {
@@ -36,12 +37,16 @@ export async function createSchemaValidators(root) {
     manifest: ajv.getSchema(schemas["impact-manifest.schema.json"].$id),
     changebenchCase: ajv.getSchema(schemas["changebench-case.schema.json"].$id),
     config: ajv.getSchema(schemas["bytesmith.config.schema.json"].$id),
+    validationPortfolio: ajv.getSchema(
+      schemas["validation-portfolio.schema.json"].$id,
+    ),
   };
 
   if (
     !validators.manifest ||
     !validators.changebenchCase ||
-    !validators.config
+    !validators.config ||
+    !validators.validationPortfolio
   ) {
     throw new Error("Required schema validator was not compiled.");
   }

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bytesmith.dev/schemas/validation-portfolio.schema.json",
+  "title": "ByteSmith real-repository validation portfolio",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "evaluations"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "evaluations": {
+      "type": "array",
+      "minItems": 5,
+      "items": { "$ref": "#/$defs/evaluation" }
+    }
+  },
+  "$defs": {
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "profile", "mode", "status", "repository", "baseRevision", "headRevision", "reviewer", "observations"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "profile": { "enum": ["ordinary-typescript", "monorepo", "api-backend", "openapi", "older-inconsistent"] },
+        "mode": { "enum": ["historical", "live"] },
+        "status": { "enum": ["pending", "completed"] },
+        "repository": { "type": "string", "minLength": 1 },
+        "baseRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "headRevision": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+        "reviewer": { "type": "string", "minLength": 1 },
+        "observations": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "manifestDigest": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "useful": { "type": "boolean" },
+        "discrepancies": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+          "then": { "required": ["manifestDigest", "useful", "discrepancies"] }
+        }
+      ]
+    }
+  }
+}

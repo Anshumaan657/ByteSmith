@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "1.0.0",
+  "evaluations": [
+    {
+      "id": "ordinary-typescript",
+      "profile": "ordinary-typescript",
+      "mode": "historical",
+      "status": "pending",
+      "repository": "REPLACE_WITH_CONSENTED_REPOSITORY",
+      "baseRevision": "0000000000000000000000000000000000000000",
+      "headRevision": "0000000000000000000000000000000000000000",
+      "reviewer": "UNASSIGNED",
+      "observations": []
+    },
+    {
+      "id": "monorepo",
+      "profile": "monorepo",
+      "mode": "historical",
+      "status": "pending",
+      "repository": "REPLACE_WITH_CONSENTED_REPOSITORY",
+      "baseRevision": "0000000000000000000000000000000000000000",
+      "headRevision": "0000000000000000000000000000000000000000",
+      "reviewer": "UNASSIGNED",
+      "observations": []
+    },
+    {
+      "id": "api-backend",
+      "profile": "api-backend",
+      "mode": "live",
+      "status": "pending",
+      "repository": "REPLACE_WITH_CONSENTED_REPOSITORY",
+      "baseRevision": "0000000000000000000000000000000000000000",
+      "headRevision": "0000000000000000000000000000000000000000",
+      "reviewer": "UNASSIGNED",
+      "observations": []
+    },
+    {
+      "id": "openapi",
+      "profile": "openapi",
+      "mode": "historical",
+      "status": "pending",
+      "repository": "REPLACE_WITH_CONSENTED_REPOSITORY",
+      "baseRevision": "0000000000000000000000000000000000000000",
+      "headRevision": "0000000000000000000000000000000000000000",
+      "reviewer": "UNASSIGNED",
+      "observations": []
+    },
+    {
+      "id": "older-inconsistent",
+      "profile": "older-inconsistent",
+      "mode": "live",
+      "status": "pending",
+      "repository": "REPLACE_WITH_CONSENTED_REPOSITORY",
+      "baseRevision": "0000000000000000000000000000000000000000",
+      "headRevision": "0000000000000000000000000000000000000000",
+      "reviewer": "UNASSIGNED",
+      "observations": []
+    }
+  ]
+}
