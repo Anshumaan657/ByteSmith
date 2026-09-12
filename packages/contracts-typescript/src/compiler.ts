@@ -635,6 +635,15 @@ function analyzeProject(
 ): ProjectResult {
   const parsed = parseProject(repositoryRoot, project);
   const host = ts.createCompilerHost(parsed.options, true);
+  const bundledLibraryDirectory =
+    process.env.BYTESMITH_TYPESCRIPT_LIB_DIRECTORY;
+  if (bundledLibraryDirectory) {
+    host.getDefaultLibFileName = (options) =>
+      path.join(
+        path.resolve(bundledLibraryDirectory),
+        ts.getDefaultLibFileName(options),
+      );
+  }
   const rootNames = project.sourceFiles.map((file) =>
     path.join(repositoryRoot, file),
   );

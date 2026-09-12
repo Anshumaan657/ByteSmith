@@ -34,7 +34,7 @@ local state in SQLite and the filesystem, and never blocks a pull request.
 - Phase 7 is complete: the shared analysis engine, exact Git
   archive snapshots, strict configuration, SQLite persistence/cache, complete
   offline CLI, focused reports, verification, and ChangeBench command are
-  covered by automated tests. GitHub Action reporting remains Phase 8 work.
+  covered by automated tests. The Phase 8 Action now executes the same exact-revision engine as the CLI; stable pull-request reporting remains in progress.
 
 ## Requirements
 

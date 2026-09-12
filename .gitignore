@@ -4,8 +4,7 @@ dist/
 !apps/github-action/dist/
 apps/github-action/dist/*
 !apps/github-action/dist/bundle/
-apps/github-action/dist/bundle/*
-!apps/github-action/dist/bundle/index.js
+!apps/github-action/dist/bundle/**
 *.tsbuildinfo
 coverage/
 *.log

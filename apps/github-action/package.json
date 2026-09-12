@@ -13,11 +13,13 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "bundle": "tsc -p tsconfig.json && ncc build dist/index.js --out dist/bundle -m",
+    "bundle": "tsc -b tsconfig.json && ncc build dist/index.js --out dist/bundle -m -a && node scripts/finalize-bundle.mjs",
     "test": "node --test test/*.test.mjs"
   },
   "dependencies": {
     "@actions/core": "1.11.1",
+    "@bytesmith/analysis-engine": "workspace:*",
+    "@bytesmith/impact-manifest": "workspace:*",
     "@bytesmith/vcs-git": "workspace:*"
   },
   "devDependencies": {

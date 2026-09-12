@@ -559,6 +559,14 @@ Phase 7 is delivered as five meaningful, independently reviewable commits:
 
 # PHASE 8 — Advisory GitHub Action
 
+## Phase 8 progress
+
+- [x] **8A — Action runtime foundation:** metadata, bundled entrypoint, full-history and clean-checkout validation.
+- [x] **8B — Pull-request context:** authoritative event revisions, merge-base resolution, fork detection, and stale checkout refusal.
+- [x] **8C — Shared engine parity:** exact-revision engine execution, strict inputs, packaged analyzer assets, and source/bundle/CLI semantic parity.
+- [ ] **8D — Stable advisory report:** revision-bound Markdown, one updating comment, evidence links, and permission-safe fallback.
+- [ ] **8E — Workflow hardening:** cancellation, force-push/rebase behavior, non-blocking contract, documentation, and end-to-end verification.
+
 ## Objective
 
 Run the same ByteSmith engine in pull requests and present one stable advisory
