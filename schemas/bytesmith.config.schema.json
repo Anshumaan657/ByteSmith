@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bytesmith.dev/schemas/bytesmith.config.schema.json",
+  "title": "ByteSmith Verify configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "analyzers", "inventoryPolicy", "consumerLimits", "recommendationLimits", "cache"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "analyzers": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["typescript", "openapi", "tests"],
+      "properties": {
+        "typescript": { "$ref": "#/$defs/analyzer" },
+        "openapi": { "$ref": "#/$defs/analyzer" },
+        "tests": { "$ref": "#/$defs/analyzer" }
+      }
+    },
+    "inventoryPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["analyzerClaims"],
+      "properties": {
+        "analyzerClaims": { "type": "array", "items": { "type": "object" } },
+        "rules": { "type": "array", "items": { "type": "object" } }
+      }
+    },
+    "consumerLimits": { "$ref": "#/$defs/limits" },
+    "recommendationLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxRecommendationsPerComponent"],
+      "properties": { "maxRecommendationsPerComponent": { "type": "integer", "minimum": 1 } }
+    },
+    "cache": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "databasePath"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "databasePath": { "type": "string", "minLength": 1 }
+      }
+    }
+  },
+  "$defs": {
+    "analyzer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["enabled", "required", "version"],
+      "properties": {
+        "enabled": { "type": "boolean" },
+        "required": { "type": "boolean" },
+        "version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "limits": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["maxDepth", "maxConsumers", "maxEdges"],
+      "properties": {
+        "maxDepth": { "type": "integer", "minimum": 1 },
+        "maxConsumers": { "type": "integer", "minimum": 1 },
+        "maxEdges": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

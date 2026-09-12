@@ -37,6 +37,7 @@ manifests for identical revisions and versions.
 | `packages/contracts-openapi` | High-value OpenAPI compatibility rules |
 | `packages/consumer-analysis` | Direct and bounded transitive consumer paths with evidence |
 | `packages/test-intelligence` | Jest/Vitest recommendations, reasons, commands, and test gaps |
+| `packages/analysis-engine` | Exact-snapshot orchestration, combined analysis, cache identity, and final manifest assembly |
 | `packages/storage-sqlite` | Embedded local index and cache persistence |
 | `packages/changebench` | Deterministic fixture execution, matching, metrics, and baselines |
 
@@ -52,6 +53,7 @@ impact-types
   -> contracts-typescript / contracts-openapi
   -> consumer-analysis / test-intelligence
   -> storage-sqlite / changebench
+  -> analysis-engine
   -> cli / github-action
 ```
 

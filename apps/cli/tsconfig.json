@@ -2,7 +2,19 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "rootDir": "src",
-    "outDir": "dist"
+    "outDir": "dist",
+    "types": ["node"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts"],
+  "references": [
+    { "path": "../../packages/analysis-engine" },
+    { "path": "../../packages/changebench" },
+    { "path": "../../packages/contracts-openapi" },
+    { "path": "../../packages/contracts-typescript" },
+    { "path": "../../packages/impact-manifest" },
+    { "path": "../../packages/manifest-validator" },
+    { "path": "../../packages/storage-sqlite" },
+    { "path": "../../packages/test-intelligence" },
+    { "path": "../../packages/vcs-git" }
+  ]
 }

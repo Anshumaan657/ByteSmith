@@ -212,6 +212,19 @@ function normalizeTerminalTestConsumers(
   };
 }
 
+/**
+ * Replace terminal test-file impacts with the nearest non-test consumer before
+ * recommendations or a final manifest are assembled. The shared Phase 7
+ * engine uses this boundary so it cannot bypass Phase 6F semantics.
+ */
+export function normalizeTerminalTestConsumerImpacts(
+  ir: CanonicalIr,
+  consumers: ConsumerAnalysisResult,
+  discovery: TestDiscoveryComparisonResult,
+): ConsumerAnalysisResult {
+  return normalizeTerminalTestConsumers(ir, consumers, discovery).result;
+}
+
 function gapUnknowns(
   discovery: TestDiscoveryComparisonResult,
 ): ManifestUnknown[] {
