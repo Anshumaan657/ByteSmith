@@ -237,6 +237,14 @@ async function executeWorker(
     const worker = new Worker(
       new URL("./analyzer-worker.js", import.meta.url),
       {
+        // Flags such as `--input-type=module` are valid for the parent process
+        // when it evaluates stdin, but Node rejects them for a file-backed
+        // worker. Keep ordinary runtime flags while dropping eval-only flags.
+        execArgv: process.execArgv.filter(
+          (argument) =>
+            argument !== "--input-type" &&
+            !argument.startsWith("--input-type="),
+        ),
         workerData: {
           repositoryId: options.repositoryId,
           base: options.base,

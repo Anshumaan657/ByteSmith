@@ -21,6 +21,11 @@ Human and machine output MUST:
   invalid configuration, and unsupported schema version; and
 - include the unchanged conclusion in JSON and compact CI output.
 
+The Verify CLI reserves these numeric exit codes: `0` pass, `1` warn, `2`
+fail, `3` incomplete, `4` error, `5` invalid configuration/manifest/input, and
+`6` unsupported schema version. Error output uses the JSON envelope
+`{"schemaVersion":"1.0.0","error":{"code":"...","message":"..."}}`.
+
 ## GitHub reports
 
 The GitHub Action/check adapter MUST:
