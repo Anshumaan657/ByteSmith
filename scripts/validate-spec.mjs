@@ -25,6 +25,35 @@ for (const name of requiredSpecifications) {
 }
 
 const { schemas, validators } = await createSchemaValidators(root);
+const portfolio = JSON.parse(
+  await fs.readFile(
+    path.join(root, "validation", "portfolio", "evaluations.json"),
+    "utf8",
+  ),
+);
+if (!validators.validationPortfolio(portfolio)) {
+  const details = formatSchemaErrors(
+    validators.validationPortfolio.errors,
+  ).join("\n  ");
+  throw new Error(`Invalid validation portfolio\n  ${details}`);
+}
+const requiredProfiles = [
+  "ordinary-typescript",
+  "monorepo",
+  "api-backend",
+  "openapi",
+  "older-inconsistent",
+];
+for (const profile of requiredProfiles) {
+  const matches = portfolio.evaluations.filter(
+    (evaluation) => evaluation.profile === profile,
+  );
+  if (matches.length !== 1) {
+    throw new Error(
+      `Validation portfolio requires exactly one ${profile} evaluation.`,
+    );
+  }
+}
 const fixtureIds = (await fs.readdir(fixtureDirectory, { withFileTypes: true }))
   .filter((entry) => entry.isDirectory())
   .map((entry) => entry.name)
