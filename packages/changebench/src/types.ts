@@ -225,6 +225,7 @@ export interface CaseRunResult {
   deterministic: boolean;
   semanticDigest?: string;
   durationMs: number;
+  peakMemoryBytes: number;
   conclusion?: Conclusion;
   coverage?: Coverage;
   evaluation?: EvaluationResult;
@@ -250,6 +251,7 @@ export interface BenchmarkMetrics {
   crashRate: number;
   determinismRate: number;
   durationMs: number;
+  peakMemoryBytes: number;
 }
 
 export interface ChangeBenchReport {

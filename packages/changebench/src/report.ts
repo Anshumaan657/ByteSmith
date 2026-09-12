@@ -11,25 +11,29 @@ export async function writeChangeBenchReport(
   await fs.writeFile(filePath, `${JSON.stringify(report, null, 2)}\n`, "utf8");
 }
 
-function withoutDurations(report: ChangeBenchReport): unknown {
+function withoutRuntimeMeasurements(report: ChangeBenchReport): unknown {
   return {
     ...report,
-    metrics: { ...report.metrics, durationMs: 0 },
+    metrics: { ...report.metrics, durationMs: 0, peakMemoryBytes: 0 },
     segments: {
       byTag: Object.fromEntries(
         Object.entries(report.segments.byTag).map(([key, metrics]) => [
           key,
-          { ...metrics, durationMs: 0 },
+          { ...metrics, durationMs: 0, peakMemoryBytes: 0 },
         ]),
       ),
       byCapability: Object.fromEntries(
         Object.entries(report.segments.byCapability).map(([key, metrics]) => [
           key,
-          { ...metrics, durationMs: 0 },
+          { ...metrics, durationMs: 0, peakMemoryBytes: 0 },
         ]),
       ),
     },
-    cases: report.cases.map((result) => ({ ...result, durationMs: 0 })),
+    cases: report.cases.map((result) => ({
+      ...result,
+      durationMs: 0,
+      peakMemoryBytes: 0,
+    })),
   };
 }
 
@@ -44,9 +48,11 @@ export function compareChangeBenchBaseline(
   current: ChangeBenchReport,
 ): { matched: boolean; message?: string } {
   const baselineSemantic = canonicalizeSemanticOutput(
-    withoutDurations(baseline),
+    withoutRuntimeMeasurements(baseline),
   );
-  const currentSemantic = canonicalizeSemanticOutput(withoutDurations(current));
+  const currentSemantic = canonicalizeSemanticOutput(
+    withoutRuntimeMeasurements(current),
+  );
   if (baselineSemantic === currentSemantic) return { matched: true };
   return {
     matched: false,

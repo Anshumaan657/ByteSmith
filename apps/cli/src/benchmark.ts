@@ -161,6 +161,8 @@ export interface BenchmarkGates {
   testSelectionRecall: boolean;
   determinism: boolean;
   crashFree: boolean;
+  smallPullRequestPerformance: boolean;
+  memoryWithinBudget: boolean;
 }
 
 export interface BenchmarkExecution {
@@ -207,6 +209,10 @@ export async function runBenchmark(options: {
     testSelectionRecall: report.metrics.testSelectionRecall >= 0.8,
     determinism: report.metrics.determinismRate === 1,
     crashFree: report.metrics.crashRate === 0,
+    smallPullRequestPerformance: report.cases.every(
+      (result) => result.durationMs < 30_000,
+    ),
+    memoryWithinBudget: report.metrics.peakMemoryBytes < 3 * 1024 ** 3,
   };
   return {
     report,
