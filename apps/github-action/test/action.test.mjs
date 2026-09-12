@@ -65,12 +65,12 @@ async function makeEnvironment(t, overrides = {}) {
 
 // --- Metadata tests ---
 
-test("action metadata declares node20, typed inputs, outputs, and bundled entrypoint", async () => {
+test("action metadata declares node24, typed inputs, outputs, and bundled entrypoint", async () => {
   const metadata = await fs.readFile(
     path.join(actionRoot, "action.yml"),
     "utf8",
   );
-  assert.match(metadata, /using:\s*node20/u);
+  assert.match(metadata, /using:\s*node24/u);
   assert.match(metadata, /main:\s*dist\/bundle\/index\.js/u);
   for (const input of [
     "base",
@@ -305,6 +305,32 @@ test("boolean Action inputs are strict and deterministic", () => {
   assert.throws(() => parseBooleanInput("yes", "use-cache", true), {
     code: "invalid_input",
   });
+});
+
+test("Action analysis forwards cancellation to the shared engine", async () => {
+  const controller = new AbortController();
+  controller.abort();
+  const startup = {
+    workspace: path.resolve(os.tmpdir(), "bytesmith-workspace"),
+    pullRequest: {
+      number: 1,
+      baseRevision: "a".repeat(40),
+      headRevision: "b".repeat(40),
+      mergeBaseRevision: "a".repeat(40),
+    },
+  };
+  await assert.rejects(
+    () =>
+      executeActionAnalysis(
+        startup,
+        { useCache: false, signal: controller.signal },
+        async (options) => {
+          assert.equal(options.signal, controller.signal);
+          throw new DOMException("Analysis was cancelled.", "AbortError");
+        },
+      ),
+    { code: "cancelled" },
+  );
 });
 
 test("Action analysis rejects configuration paths outside the checkout", async () => {

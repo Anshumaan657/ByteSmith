@@ -18,11 +18,11 @@ inputs:
   use-cache:
     description: Whether to use the local ByteSmith SQLite cache.
     required: false
-    default: 'true'
+    default: "true"
   publish:
     description: Whether to publish the advisory report when reporting is enabled.
     required: false
-    default: 'true'
+    default: "true"
   github-token:
     description: GitHub token used to update the single advisory pull-request report.
     required: false
@@ -43,7 +43,7 @@ outputs:
   report-state:
     description: Whether the advisory report was created, updated, written to the summary, or skipped.
 runs:
-  using: node20
+  using: node24
   main: dist/bundle/index.js
 branding:
   color: purple
