@@ -4,7 +4,13 @@ import { compareCodePoints } from "@bytesmith/impact-types";
 import { TypeScriptDiscoveryError } from "./errors.js";
 import type { DiscoveryDiagnostic } from "./types.js";
 
-const ignoredDirectories = new Set([".git", ".hg", ".svn", "node_modules"]);
+const ignoredDirectories = new Set([
+  ".git",
+  ".hg",
+  ".svn",
+  "dist",
+  "node_modules",
+]);
 
 export function toRepositoryPath(
   repositoryRoot: string,

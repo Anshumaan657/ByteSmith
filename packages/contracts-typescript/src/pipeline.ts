@@ -37,7 +37,7 @@ const defaultLimits: TypeScriptAnalyzerLimits = {
   maxDiagnostics: 2_000,
 };
 
-const ignoredSnapshotDirectories = new Set([".git", "node_modules"]);
+const ignoredSnapshotDirectories = new Set([".git", "dist", "node_modules"]);
 
 interface NormalizedAnalyzerOptions {
   repositoryId: string;
