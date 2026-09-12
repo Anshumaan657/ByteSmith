@@ -21,7 +21,6 @@ import {
   renderAdvisoryReport,
   publishAdvisoryReport,
   GitHubReportError,
-  REPORT_MARKER,
 } from "./report.js";
 import type { ImpactManifest } from "@bytesmith/impact-manifest";
 

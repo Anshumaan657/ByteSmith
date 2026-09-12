@@ -265,7 +265,6 @@ test("renderAdvisoryReport bounds long sections", () => {
 test("renderAdvisoryReport evidence links use exact head commit", () => {
   const manifest = makeManifest();
   const report = renderAdvisoryReport(manifest, "example/test-repo");
-  const headShort = "b".repeat(12);
   assert.ok(report.includes(`blob/${"b".repeat(40)}/`));
   assert.ok(!report.includes("main"));
   assert.ok(!report.includes("HEAD"));
