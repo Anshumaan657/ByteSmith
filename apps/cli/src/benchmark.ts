@@ -156,6 +156,7 @@ export const executeAnalysisBenchmarkCase: ChangeBenchExecutor = async (
 };
 
 export interface BenchmarkGates {
+  contractPrecision: boolean;
   directConsumerPrecision: boolean;
   testSelectionRecall: boolean;
   determinism: boolean;
@@ -201,7 +202,8 @@ export async function runBenchmark(options: {
     repeat: options.repeat ?? 2,
   });
   const gates = {
-    directConsumerPrecision: report.metrics.precision >= 0.9,
+    contractPrecision: report.metrics.contractPrecision >= 0.95,
+    directConsumerPrecision: report.metrics.directConsumerPrecision >= 0.9,
     testSelectionRecall: report.metrics.testSelectionRecall >= 0.8,
     determinism: report.metrics.determinismRate === 1,
     crashFree: report.metrics.crashRate === 0,

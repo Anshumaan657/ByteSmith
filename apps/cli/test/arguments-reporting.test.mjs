@@ -129,6 +129,7 @@ test("benchmark orchestration measures deterministic selected cases and quality 
   assert.equal(result.report.metrics.passed, 1);
   assert.equal(result.report.metrics.determinismRate, 1);
   assert.deepEqual(result.gates, {
+    contractPrecision: true,
     directConsumerPrecision: true,
     testSelectionRecall: true,
     determinism: true,

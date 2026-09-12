@@ -601,6 +601,19 @@ report.
 Measure whether the connected verification workflow is accurate, useful,
 understandable, and fast enough to validate the product hypothesis.
 
+## Delivery slices
+
+1. **Phase 9A — Release metric contract.** Separate contract and consumer
+   precision and enforce every automated accuracy and reliability threshold.
+2. **Phase 9B — Repository portfolio evidence.** Validate versioned historical
+   and live evaluations for all five required repository profiles.
+3. **Phase 9C — Performance and reliability.** Measure wall time, peak memory,
+   determinism, incomplete outcomes, and crashes with bounded one-worker runs.
+4. **Phase 9D — Distribution and operations.** Complete installation,
+   troubleshooting, supported-pattern, limitation, and release procedures.
+5. **Phase 9E — Release-candidate audit.** Produce the final machine-readable
+   gate report and Verify 0.1 release notes without inventing human evidence.
+
 ## Repository portfolio
 
 - One ordinary TypeScript repository

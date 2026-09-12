@@ -186,6 +186,8 @@ test("runner repeats execution, reports deterministic results, metrics, and segm
   assert.equal(report.cases[0].deterministic, true);
   assert.equal(report.metrics.determinismRate, 1);
   assert.equal(report.metrics.crashRate, 0);
+  assert.equal(report.metrics.contractPrecision, 1);
+  assert.equal(report.metrics.directConsumerPrecision, 1);
   assert.equal(report.segments.byTag["mvp-20"].cases, 1);
   assert.equal(report.segments.byCapability["changebench.matcher"].cases, 1);
 });

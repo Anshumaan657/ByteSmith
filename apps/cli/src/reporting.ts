@@ -193,6 +193,8 @@ export function renderBenchmark(
     `ByteSmith ChangeBench ${paint(result, result === "PASS" ? "green" : "red", useColor)}`,
     `Cases: ${metrics.passed}/${metrics.cases} passed`,
     `Precision: ${(metrics.precision * 100).toFixed(2)}%`,
+    `Contract precision: ${(metrics.contractPrecision * 100).toFixed(2)}%`,
+    `Direct-consumer precision: ${(metrics.directConsumerPrecision * 100).toFixed(2)}%`,
     `Recall: ${(metrics.recall * 100).toFixed(2)}%`,
     `Test-selection recall: ${(metrics.testSelectionRecall * 100).toFixed(2)}%`,
     `Determinism: ${(metrics.determinismRate * 100).toFixed(2)}%`,
