@@ -78,6 +78,10 @@ export function calculateMetrics(results: CaseRunResult[]): BenchmarkMetrics {
     crashRate: rounded(ratio(crashed, results.length)),
     determinismRate: rounded(ratio(deterministic, results.length)),
     durationMs: results.reduce((total, result) => total + result.durationMs, 0),
+    peakMemoryBytes: results.reduce(
+      (peak, result) => Math.max(peak, result.peakMemoryBytes ?? 0),
+      0,
+    ),
   };
 }
 

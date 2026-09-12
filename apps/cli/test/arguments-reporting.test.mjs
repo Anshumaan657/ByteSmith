@@ -134,6 +134,8 @@ test("benchmark orchestration measures deterministic selected cases and quality 
     testSelectionRecall: true,
     determinism: true,
     crashFree: true,
+    smallPullRequestPerformance: true,
+    memoryWithinBudget: true,
   });
   assert.equal(result.passed, true);
 });

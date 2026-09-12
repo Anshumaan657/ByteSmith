@@ -200,6 +200,7 @@ export function renderBenchmark(
     `Determinism: ${(metrics.determinismRate * 100).toFixed(2)}%`,
     `Crashes: ${metrics.crashed}`,
     `Duration: ${metrics.durationMs}ms`,
+    `Peak resident memory: ${(metrics.peakMemoryBytes / 1024 / 1024).toFixed(2)} MiB`,
   ].join("\n")}\n`;
 }
 

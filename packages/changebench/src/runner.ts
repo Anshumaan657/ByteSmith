@@ -26,6 +26,11 @@ async function runCase(
   repeat: number,
 ): Promise<CaseRunResult> {
   const start = performance.now();
+  let peakMemoryBytes = process.memoryUsage().rss;
+  const memorySampler = setInterval(() => {
+    peakMemoryBytes = Math.max(peakMemoryBytes, process.memoryUsage().rss);
+  }, 25);
+  memorySampler.unref();
   const materialized = await materializeChangeBenchCase(loadedCase);
   try {
     const outputs = [];
@@ -56,6 +61,7 @@ async function runCase(
       deterministic,
       semanticDigest: digests[0]!,
       durationMs: Math.round(performance.now() - start),
+      peakMemoryBytes: Math.max(peakMemoryBytes, process.memoryUsage().rss),
       ...(conclusion ? { conclusion } : {}),
       ...(coverage ? { coverage } : {}),
       evaluation,
@@ -73,9 +79,11 @@ async function runCase(
       crashed: true,
       deterministic: false,
       durationMs: Math.round(performance.now() - start),
+      peakMemoryBytes: Math.max(peakMemoryBytes, process.memoryUsage().rss),
       error: errorMessage(error),
     };
   } finally {
+    clearInterval(memorySampler);
     await materialized.cleanup();
   }
 }

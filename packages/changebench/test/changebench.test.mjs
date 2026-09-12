@@ -186,6 +186,7 @@ test("runner repeats execution, reports deterministic results, metrics, and segm
   assert.equal(report.cases[0].deterministic, true);
   assert.equal(report.metrics.determinismRate, 1);
   assert.equal(report.metrics.crashRate, 0);
+  assert.ok(report.metrics.peakMemoryBytes > 0);
   assert.equal(report.metrics.contractPrecision, 1);
   assert.equal(report.metrics.directConsumerPrecision, 1);
   assert.equal(report.segments.byTag["mvp-20"].cases, 1);
@@ -229,6 +230,7 @@ test("report baselines ignore durations but reject semantic regressions", async 
     crashed: false,
     deterministic: true,
     durationMs: 10,
+    peakMemoryBytes: 100,
   };
   const metrics = calculateMetrics([result]);
   const report = {
@@ -243,9 +245,13 @@ test("report baselines ignore durations but reject semantic regressions", async 
   };
   const current = structuredClone(report);
   current.metrics.durationMs = 999;
+  current.metrics.peakMemoryBytes = 999;
   current.cases[0].durationMs = 999;
+  current.cases[0].peakMemoryBytes = 999;
   current.segments.byTag.typescript.durationMs = 999;
+  current.segments.byTag.typescript.peakMemoryBytes = 999;
   current.segments.byCapability["typescript.exports"].durationMs = 999;
+  current.segments.byCapability["typescript.exports"].peakMemoryBytes = 999;
   assert.deepEqual(compareChangeBenchBaseline(report, current), {
     matched: true,
   });
