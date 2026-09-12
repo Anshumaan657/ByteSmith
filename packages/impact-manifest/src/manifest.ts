@@ -15,6 +15,7 @@ import type {
   Digest,
   ImpactManifest,
   ManifestAnalyzer,
+  ManifestAssemblyInput,
   ManifestBuildInput,
   ManifestScopeFile,
 } from "./types.js";
@@ -202,4 +203,56 @@ export function serializeImpactManifest(
   return options.pretty
     ? `${JSON.stringify(manifest, undefined, 2)}\n`
     : JSON.stringify(manifest);
+}
+
+function mergeRecords<T extends { id: string }>(
+  values: readonly (readonly T[])[],
+): T[] {
+  return [
+    ...new Map(
+      values.flat().map((value) => [value.id, structuredClone(value)]),
+    ).values(),
+  ].sort((left, right) => compareCodePoints(left.id, right.id));
+}
+
+/**
+ * Assemble the final manifest without conflating the changed-file scope IR
+ * with the richer IR emitted by individual analyzers.
+ *
+ * The Phase 3 builder remains available for its original contract. This
+ * boundary is the only API that should be used by the engine once analyzer
+ * findings, consumer paths, and test recommendations exist.
+ */
+export function assembleImpactManifest(
+  input: ManifestAssemblyInput,
+): ImpactManifest {
+  const base = createImpactManifest({ ...input, ir: input.scopeIr });
+  const baseBody = structuredClone(base) as Omit<
+    ImpactManifest,
+    "status" | "integrity"
+  > &
+    Partial<Pick<ImpactManifest, "status" | "integrity">>;
+  delete baseBody.status;
+  delete baseBody.integrity;
+  const assembled = {
+    ...baseBody,
+    evidence: mergeRecords([base.evidence, input.evidence ?? []]),
+    changes: mergeRecords([input.changes ?? []]),
+    impacts: mergeRecords([input.impacts ?? []]),
+    tests: {
+      recommended: mergeRecords([input.testRecommendations ?? []]),
+      gaps: mergeRecords([input.testGaps ?? []]),
+    },
+    unknowns: mergeRecords([base.unknowns, input.unknowns ?? []]),
+    policies: mergeRecords([input.policies ?? []]),
+    dispositions: mergeRecords([input.dispositions ?? []]),
+    appeals: mergeRecords([input.appeals ?? []]),
+    waivers: mergeRecords([input.waivers ?? []]),
+    suspensions: mergeRecords([input.suspensions ?? []]),
+    auditEvents: mergeRecords([input.auditEvents ?? []]),
+  } satisfies Omit<ImpactManifest, "status" | "integrity">;
+  return withSemanticDigest({
+    ...assembled,
+    status: deriveResult(assembled),
+  });
 }
