@@ -73,7 +73,7 @@ test("action metadata declares node20, typed inputs, outputs, and bundled entryp
     "use-cache",
     "publish",
   ]) {
-    assert.match(metadata, new RegExp('  ' + input + ':', "mu"));
+    assert.match(metadata, new RegExp("  " + input + ":", "mu"));
   }
   for (const output of [
     "conclusion",
@@ -83,7 +83,7 @@ test("action metadata declares node20, typed inputs, outputs, and bundled entryp
     "merge-base",
     "error-code",
   ]) {
-    assert.match(metadata, new RegExp('  ' + output + ':', "mu"));
+    assert.match(metadata, new RegExp("  " + output + ":", "mu"));
   }
 });
 
@@ -98,12 +98,20 @@ test("startup validation accepts a fully populated environment", async (t) => {
   const head = await git(repository, "rev-parse", "HEAD");
 
   // Write event.json outside the git repo so the working tree stays clean
-  const eventDir = await fs.mkdtemp(
-    path.join(os.tmpdir(), "bytesmith-event-"),
-  );
+  const eventDir = await fs.mkdtemp(path.join(os.tmpdir(), "bytesmith-event-"));
   t.after(() => fs.rm(eventDir, { recursive: true, force: true }));
   const eventPath = path.join(eventDir, "event.json");
-  await fs.writeFile(eventPath, '{"action":"opened"}\n');
+  await fs.writeFile(
+    eventPath,
+    JSON.stringify({
+      action: "opened",
+      pull_request: {
+        number: 17,
+        base: { sha: head },
+        head: { sha: head, repo: { full_name: "example/project" } },
+      },
+    }),
+  );
 
   const result = await validateActionEnvironment({
     GITHUB_ACTIONS: "true",
@@ -116,8 +124,46 @@ test("startup validation accepts a fully populated environment", async (t) => {
   assert.equal(result.eventName, "pull_request");
   assert.equal(result.repository, "example/project");
   assert.equal(result.headCommit, head);
+  assert.equal(result.pullRequest.number, 17);
+  assert.equal(result.pullRequest.baseRevision, head);
+  assert.equal(result.pullRequest.headRevision, head);
+  assert.equal(result.pullRequest.mergeBaseRevision, head);
+  assert.equal(result.pullRequest.fork, false);
   // Git resolves symlinks (macOS /var -> /private/var), so compare real paths
   assert.equal(result.workspace, await fs.realpath(repository));
+});
+
+test("startup validation rejects revision inputs that differ from the event", async (t) => {
+  const repository = await makeCleanRepository(t);
+  const head = await git(repository, "rev-parse", "HEAD");
+  const eventDir = await fs.mkdtemp(path.join(os.tmpdir(), "bytesmith-event-"));
+  t.after(() => fs.rm(eventDir, { recursive: true, force: true }));
+  const eventPath = path.join(eventDir, "event.json");
+  await fs.writeFile(
+    eventPath,
+    JSON.stringify({
+      pull_request: {
+        number: 1,
+        base: { sha: head },
+        head: { sha: head, repo: { full_name: "example/project" } },
+      },
+    }),
+  );
+  await assert.rejects(
+    () =>
+      validateActionEnvironment(
+        {
+          GITHUB_ACTIONS: "true",
+          GITHUB_EVENT_NAME: "pull_request",
+          GITHUB_EVENT_PATH: eventPath,
+          GITHUB_REPOSITORY: "example/project",
+          GITHUB_SHA: head,
+          GITHUB_WORKSPACE: repository,
+        },
+        { head: "f".repeat(40) },
+      ),
+    { code: "stale_revision" },
+  );
 });
 
 // --- Missing environment diagnostics ---
@@ -209,9 +255,7 @@ test("shallow repository rejects with shallow_repository", async (t) => {
   const shallowRepo = path.join(shallow, "repo");
   const head = await git(shallowRepo, "rev-parse", "HEAD");
 
-  const eventDir = await fs.mkdtemp(
-    path.join(os.tmpdir(), "bytesmith-event-"),
-  );
+  const eventDir = await fs.mkdtemp(path.join(os.tmpdir(), "bytesmith-event-"));
   t.after(() => fs.rm(eventDir, { recursive: true, force: true }));
   const eventPath = path.join(eventDir, "event.json");
   await fs.writeFile(eventPath, '{"action":"opened"}\n');

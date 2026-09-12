@@ -7,6 +7,13 @@ import {
   executeGit,
   inspectWorkingTree,
 } from "@bytesmith/vcs-git";
+import {
+  PullRequestContextError,
+  resolvePullRequestContext,
+  type PullRequestContext,
+} from "./context.js";
+
+export * from "./context.js";
 
 export interface ActionEnvironment {
   GITHUB_ACTIONS?: string;
@@ -23,6 +30,7 @@ export interface ActionStartupContext {
   eventName: "pull_request";
   event: Record<string, unknown>;
   headCommit: string;
+  pullRequest: PullRequestContext;
 }
 
 export class ActionError extends Error {
@@ -114,6 +122,7 @@ async function assertFullHistory(workspace: string): Promise<void> {
 
 export async function validateActionEnvironment(
   environment: ActionEnvironment = process.env,
+  inputs: { base?: string; head?: string } = {},
 ): Promise<ActionStartupContext> {
   requiredEnvironment(environment, "GITHUB_ACTIONS");
   const eventName = requiredEnvironment(environment, "GITHUB_EVENT_NAME");
@@ -125,10 +134,7 @@ export async function validateActionEnvironment(
   const eventPath = path.resolve(
     requiredEnvironment(environment, "GITHUB_EVENT_PATH"),
   );
-  const expectedSha = requiredEnvironment(
-    environment,
-    "GITHUB_SHA",
-  ).toLowerCase();
+  requiredEnvironment(environment, "GITHUB_SHA");
 
   try {
     await access(workspace);
@@ -151,18 +157,20 @@ export async function validateActionEnvironment(
       "ByteSmith refuses to analyze an uncommitted runner working tree.",
     );
   }
-  if (workingTree.headCommit !== expectedSha) {
-    throw new ActionError(
-      "unexpected_checkout",
-      "The checked-out commit does not match GITHUB_SHA; check out the exact pull-request revision.",
-    );
-  }
+  const pullRequest = await resolvePullRequestContext({
+    event,
+    repositoryPath: gitRepository.rootPath,
+    repository,
+    ...(inputs.base ? { baseInput: inputs.base } : {}),
+    ...(inputs.head ? { headInput: inputs.head } : {}),
+  });
   return {
     workspace: gitRepository.rootPath,
     repository,
     eventName,
     event,
     headCommit: workingTree.headCommit,
+    pullRequest,
   };
 }
 
@@ -170,9 +178,16 @@ export async function runAction(
   environment: ActionEnvironment = process.env,
 ): Promise<void> {
   try {
-    const context = await validateActionEnvironment(environment);
+    const baseInput = core.getInput("base");
+    const headInput = core.getInput("head");
+    const context = await validateActionEnvironment(environment, {
+      ...(baseInput ? { base: baseInput } : {}),
+      ...(headInput ? { head: headInput } : {}),
+    });
     core.setOutput("conclusion", "not_evaluated");
-    core.setOutput("head-revision", context.headCommit);
+    core.setOutput("base-revision", context.pullRequest.baseRevision);
+    core.setOutput("head-revision", context.pullRequest.headRevision);
+    core.setOutput("merge-base", context.pullRequest.mergeBaseRevision);
     core.info(
       "ByteSmith Verify startup validation passed. Analysis is advisory in Verify 0.1.",
     );
@@ -180,11 +195,13 @@ export async function runAction(
     const error =
       cause instanceof ActionError
         ? cause
-        : new ActionError(
-            "startup_error",
-            "ByteSmith Verify could not start safely.",
-            { cause },
-          );
+        : cause instanceof PullRequestContextError
+          ? new ActionError(cause.code, cause.message, { cause })
+          : new ActionError(
+              "startup_error",
+              "ByteSmith Verify could not start safely.",
+              { cause },
+            );
     core.setOutput("conclusion", "error");
     core.setOutput("error-code", error.code);
     core.setFailed(`${error.code}: ${error.message}`);
