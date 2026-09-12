@@ -267,7 +267,10 @@ export async function runAction(
       } catch (cause) {
         reportError = cause instanceof Error ? cause : new Error(String(cause));
         if (cause instanceof GitHubReportError) {
-          if (cause.code === "permission_denied" || cause.code === "missing_github_token") {
+          if (
+            cause.code === "permission_denied" ||
+            cause.code === "missing_github_token"
+          ) {
             core.warning(
               `ByteSmith could not publish the advisory report (${cause.code}); writing to job summary instead.`,
             );
@@ -317,7 +320,10 @@ export async function runAction(
     core.setOutput("report-state", reportState);
 
     if (manifest) {
-      core.setOutput("semantic-digest", manifest.integrity.semanticDigest.value);
+      core.setOutput(
+        "semantic-digest",
+        manifest.integrity.semanticDigest.value,
+      );
       core.setOutput("base-revision", manifest.comparison.baseRevision);
       core.setOutput("head-revision", manifest.comparison.headRevision);
       core.setOutput("merge-base", manifest.comparison.mergeBaseRevision ?? "");
@@ -337,9 +343,12 @@ export async function runAction(
 
   core.setOutput("report-state", reportState);
 
-  if (reportError && !["permission_denied", "missing_github_token", "stale_analysis"].includes(
-    reportError instanceof GitHubReportError ? reportError.code : "",
-  )) {
+  if (
+    reportError &&
+    !["permission_denied", "missing_github_token", "stale_analysis"].includes(
+      reportError instanceof GitHubReportError ? reportError.code : "",
+    )
+  ) {
     core.setOutput("error-code", "report_publication_failed");
   }
 }

@@ -85,7 +85,9 @@ export function renderAdvisoryReport(
   const links = (ids: readonly string[]) =>
     ids
       .map((id) => evidence.get(id))
-      .filter((item): item is ImpactManifest["evidence"][number] => Boolean(item))
+      .filter((item): item is ImpactManifest["evidence"][number] =>
+        Boolean(item),
+      )
       .slice(0, 3)
       .map(
         (item, index) =>
@@ -119,7 +121,9 @@ export function renderAdvisoryReport(
       `**${safe(unknown.blockingRelevance)}** — ${safe(unknown.summary)}${links(unknown.evidenceIds) ? ` (${links(unknown.evidenceIds)})` : ""}`,
   );
   const analyzerProblems = manifest.analyzers
-    .filter((analyzer) => !["completed", "not_applicable"].includes(analyzer.status))
+    .filter(
+      (analyzer) => !["completed", "not_applicable"].includes(analyzer.status),
+    )
     .map(
       (analyzer) =>
         `**${safe(analyzer.id)}** is ${safe(analyzer.status)}${analyzer.diagnostics.length ? ` — ${safe(analyzer.diagnostics.join("; "))}` : ""}`,
@@ -146,12 +150,32 @@ export function renderAdvisoryReport(
     `| Semantic digest | \`${manifest.integrity.semanticDigest.value}\` |`,
     `| Changed-file coverage | ${coverage.analyzed + coverage.partiallyAnalyzed}/${coverage.totalChangedFiles} analyzed or partially analyzed; ${coverage.unsupported} unsupported; ${coverage.intentionallyExcluded} excluded |`,
     "",
-    ...section("Breaking contract changes", breaking, "No breaking contract change was identified in the analyzed scope."),
-    ...section("Affected consumers", consumers, "No affected consumer was linked."),
-    ...section("Recommended tests", recommendations, "No targeted test was recommended."),
+    ...section(
+      "Breaking contract changes",
+      breaking,
+      "No breaking contract change was identified in the analyzed scope.",
+    ),
+    ...section(
+      "Affected consumers",
+      consumers,
+      "No affected consumer was linked.",
+    ),
+    ...section(
+      "Recommended tests",
+      recommendations,
+      "No targeted test was recommended.",
+    ),
     ...section("Test gaps", gaps, "No test gap was reported."),
-    ...section("Unknowns and coverage gaps", unknowns, "No analysis unknown was reported."),
-    ...section("Analyzer health", analyzerProblems, "All applicable analyzers completed."),
+    ...section(
+      "Unknowns and coverage gaps",
+      unknowns,
+      "No analysis unknown was reported.",
+    ),
+    ...section(
+      "Analyzer health",
+      analyzerProblems,
+      "All applicable analyzers completed.",
+    ),
     `<sub>Manifest ${safe(manifest.manifestId)} · Engine ${safe(manifest.engine.version)} · Rule set ${safe(manifest.engine.ruleSetVersion)}</sub>`,
   ].join("\n");
 }
@@ -197,9 +221,13 @@ export async function publishAdvisoryReport(
     try {
       response = await request(url, { ...init, headers });
     } catch (cause) {
-      throw new GitHubReportError("github_api_error", "GitHub API request failed.", {
-        cause,
-      });
+      throw new GitHubReportError(
+        "github_api_error",
+        "GitHub API request failed.",
+        {
+          cause,
+        },
+      );
     }
     const value = await responseJson(response);
     if (!response.ok) {
