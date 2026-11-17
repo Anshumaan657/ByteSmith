@@ -149,6 +149,19 @@ async function openApiRepository(t) {
   return { directory, base, head };
 }
 
+async function docsOnlyRepository(t) {
+  const directory = await fs.mkdtemp(
+    path.join(os.tmpdir(), "bytesmith-docs-only-engine-"),
+  );
+  t.after(async () => fs.rm(directory, { recursive: true, force: true }));
+  await git(directory, "init", "--quiet");
+  await write(directory, "README.md", "before\n");
+  const base = await commitAll(directory, "before");
+  await write(directory, "README.md", "after\n");
+  const head = await commitAll(directory, "after");
+  return { directory, base, head };
+}
+
 test("the engine assembles, validates, persists, and reuses an exact TypeScript impact", async (t) => {
   const repository = await typescriptRepository(t);
   await write(
@@ -234,6 +247,28 @@ test("an already-cancelled analysis stops before materializing snapshots", async
     }),
     (error) => error instanceof DOMException && error.name === "AbortError",
   );
+});
+
+test("docs-only changes skip unrelated analyzers and remain completed", async (t) => {
+  const repository = await docsOnlyRepository(t);
+  const config = defaultByteSmithConfig();
+  config.cache.enabled = false;
+  const result = await analyzeRepository({
+    repositoryPath: repository.directory,
+    base: repository.base,
+    head: repository.head,
+    config,
+    useCache: false,
+  });
+  assert.deepEqual(
+    result.manifest.analyzers.map(({ id, status }) => ({ id, status })),
+    [
+      { id: "bytesmith.openapi", status: "not_applicable" },
+      { id: "bytesmith.test-intelligence", status: "not_applicable" },
+      { id: "bytesmith.typescript", status: "not_applicable" },
+    ],
+  );
+  assert.equal(result.manifest.status.conclusion, "warn");
 });
 
 test("the engine projects an OpenAPI schema change into the final manifest", async (t) => {

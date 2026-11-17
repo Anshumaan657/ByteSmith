@@ -29,6 +29,7 @@ import {
 import type { CanonicalIr } from "@bytesmith/ir";
 import { createCanonicalIr } from "@bytesmith/ir";
 import { assertImpactManifest } from "@bytesmith/manifest-validator";
+import type { RepositoryInventory } from "@bytesmith/repository-inventory";
 import {
   runTestDiscoveryComparison,
   recommendTests,
@@ -236,13 +237,18 @@ async function evaluateTypeScriptContracts(
 async function analyzeFamilies(
   comparison: ResolvedGitComparison,
   config: ByteSmithConfigFile,
+  inventory: RepositoryInventory,
   snapshots: { base: string; head: string },
   signal: AbortSignal | undefined,
 ): Promise<FamilyRuns> {
   checkAborted(signal);
   const output: FamilyRuns = {};
   const tasks: Promise<void>[] = [];
-  if (config.analyzers.typescript.enabled) {
+  const claims = new Set(inventory.files.flatMap((file) => file.analyzerIds));
+  if (
+    config.analyzers.typescript.enabled &&
+    claims.has("bytesmith.typescript")
+  ) {
     tasks.push(
       (async () => {
         const started = performance.now();
@@ -270,7 +276,7 @@ async function analyzeFamilies(
       })(),
     );
   }
-  if (config.analyzers.openapi.enabled) {
+  if (config.analyzers.openapi.enabled && claims.has("bytesmith.openapi")) {
     tasks.push(
       (async () => {
         const started = performance.now();
@@ -402,14 +408,16 @@ async function sharedTestAndConsumerAnalysis(
       analyzerVersion: config.analyzers.openapi.version,
     });
   }
-  const discovery = config.analyzers.tests.enabled
-    ? await runTestDiscoveryComparison({
-        repositoryId: comparison.identity.id,
-        base: { directory: snapshots.base, revision: comparison.mergeBase },
-        head: { directory: snapshots.head, revision: comparison.head.commit },
-        analyzerVersion: config.analyzers.tests.version,
-      })
-    : undefined;
+  const discovery =
+    config.analyzers.tests.enabled &&
+    (families.typescript !== undefined || families.openapi !== undefined)
+      ? await runTestDiscoveryComparison({
+          repositoryId: comparison.identity.id,
+          base: { directory: snapshots.base, revision: comparison.mergeBase },
+          head: { directory: snapshots.head, revision: comparison.head.commit },
+          analyzerVersion: config.analyzers.tests.version,
+        })
+      : undefined;
   if (typescriptConsumers && discovery && families.typescript) {
     typescriptConsumers = normalizeTerminalTestConsumerImpacts(
       families.typescript.result.ir,
@@ -434,7 +442,7 @@ async function sharedTestAndConsumerAnalysis(
       : consumerResults.length === 1
         ? consumerResults[0]!
         : combineConsumerAnalysisResults(consumerResults);
-  if (!config.analyzers.tests.enabled) {
+  if (!config.analyzers.tests.enabled || !discovery) {
     return {
       consumers,
       evidence: [...consumers.generatedEvidence],
@@ -443,9 +451,6 @@ async function sharedTestAndConsumerAnalysis(
     };
   }
   checkAborted(signal);
-  if (!discovery) {
-    throw new TypeError("Test discovery was not initialized.");
-  }
   const test = recommendTests({
     ir: linkageIr,
     testIr: discovery.ir,
@@ -615,6 +620,7 @@ export async function analyzeRepository(
         const families = await analyzeFamilies(
           comparison,
           config,
+          phase3.snapshot.inventory,
           { base: baseSnapshot.directory, head: headSnapshot.directory },
           options.signal,
         );
@@ -638,9 +644,34 @@ export async function analyzeRepository(
           "head",
         );
         const analyzers: ManifestAnalyzer[] = [
-          ...(families.typescript ? [families.typescript.analyzer] : []),
-          ...(families.openapi ? [families.openapi.analyzer] : []),
-          ...(config.analyzers.tests.enabled
+          ...(families.typescript
+            ? [families.typescript.analyzer]
+            : config.analyzers.typescript.enabled
+              ? [
+                  analyzerDescriptor(
+                    "bytesmith.typescript",
+                    config.analyzers.typescript,
+                    "not_applicable",
+                    undefined,
+                    [],
+                  ),
+                ]
+              : []),
+          ...(families.openapi
+            ? [families.openapi.analyzer]
+            : config.analyzers.openapi.enabled
+              ? [
+                  analyzerDescriptor(
+                    "bytesmith.openapi",
+                    config.analyzers.openapi,
+                    "not_applicable",
+                    undefined,
+                    [],
+                  ),
+                ]
+              : []),
+          ...(config.analyzers.tests.enabled &&
+          (families.typescript !== undefined || families.openapi !== undefined)
             ? [
                 analyzerDescriptor(
                   "bytesmith.test-intelligence",
@@ -658,7 +689,17 @@ export async function analyzeRepository(
                     [],
                 ),
               ]
-            : []),
+            : config.analyzers.tests.enabled
+              ? [
+                  analyzerDescriptor(
+                    "bytesmith.test-intelligence",
+                    config.analyzers.tests,
+                    "not_applicable",
+                    undefined,
+                    [],
+                  ),
+                ]
+              : []),
         ];
         const allEvidence = mergeById([
           ...phase3.snapshot.ir.evidence,
