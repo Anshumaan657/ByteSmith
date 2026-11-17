@@ -9,6 +9,7 @@ apps/github-action/dist/*
 coverage/
 *.log
 changebench/reports/*.json
+validation/release-audit.json
 .DS_Store
 .env
 .env.*

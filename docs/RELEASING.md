@@ -8,8 +8,10 @@ workspace lockfile; the Action ships its committed self-contained bundle.
 3. Rebuild the Action with
    `corepack pnpm --filter @bytesmith/github-action bundle` and verify that no
    uncommitted bundle change remains.
-4. Run the release audit. Automated gates must pass; repository and human gates
-   must be backed by completed, reviewable evidence.
+4. Run `corepack pnpm release:audit`. It writes
+   `validation/release-audit.json` and fails closed until automated gates,
+   five repository evaluations, and five independent developer evaluations are
+   complete. Never alter pending evidence to make this command pass.
 5. Confirm package versions, action metadata, schema versions, documentation,
    known limitations, and release notes agree.
 6. Create an annotated `v0.1.0` tag from the reviewed main commit and push the

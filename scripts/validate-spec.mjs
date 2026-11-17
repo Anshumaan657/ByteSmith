@@ -2,7 +2,10 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
-import { createSchemaValidators, formatSchemaErrors } from "./lib/schema-validation.mjs";
+import {
+  createSchemaValidators,
+  formatSchemaErrors,
+} from "./lib/schema-validation.mjs";
 
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(scriptDirectory, "..");
@@ -17,7 +20,7 @@ const requiredSpecifications = [
   "rule-graduation.md",
   "canonicalization.md",
   "semantic-validation.md",
-  "interface-reporting.md"
+  "interface-reporting.md",
 ];
 
 for (const name of requiredSpecifications) {
@@ -36,6 +39,21 @@ if (!validators.validationPortfolio(portfolio)) {
     validators.validationPortfolio.errors,
   ).join("\n  ");
   throw new Error(`Invalid validation portfolio\n  ${details}`);
+}
+const usability = JSON.parse(
+  await fs.readFile(
+    path.join(root, "validation", "usability", "evaluations.json"),
+    "utf8",
+  ),
+);
+if (!validators.usabilityEvaluations(usability)) {
+  const details = formatSchemaErrors(
+    validators.usabilityEvaluations.errors,
+  ).join("\n  ");
+  throw new Error(`Invalid usability evaluations\n  ${details}`);
+}
+if (usability.evaluations.length < 5) {
+  throw new Error("Usability evidence requires at least five evaluations.");
 }
 const requiredProfiles = [
   "ordinary-typescript",
@@ -59,15 +77,22 @@ const fixtureIds = (await fs.readdir(fixtureDirectory, { withFileTypes: true }))
   .map((entry) => entry.name)
   .sort();
 const mvpTagCounts = new Map(
-  Array.from({ length: 20 }, (_, index) => [`mvp-${String(index + 1).padStart(2, "0")}`, 0])
+  Array.from({ length: 20 }, (_, index) => [
+    `mvp-${String(index + 1).padStart(2, "0")}`,
+    0,
+  ]),
 );
 
 for (const fixtureId of fixtureIds) {
   const directory = path.join(fixtureDirectory, fixtureId);
-  const fixture = JSON.parse(await fs.readFile(path.join(directory, "case.json"), "utf8"));
+  const fixture = JSON.parse(
+    await fs.readFile(path.join(directory, "case.json"), "utf8"),
+  );
 
   if (!validators.changebenchCase(fixture)) {
-    const details = formatSchemaErrors(validators.changebenchCase.errors).join("\n  ");
+    const details = formatSchemaErrors(validators.changebenchCase.errors).join(
+      "\n  ",
+    );
     throw new Error(`${fixtureId}: invalid ChangeBench case\n  ${details}`);
   }
   if (fixture.id !== fixtureId) {
@@ -80,32 +105,42 @@ for (const fixtureId of fixtureIds) {
   for (const snapshot of [fixture.snapshots.before, fixture.snapshots.after]) {
     const snapshotPath = path.join(directory, snapshot);
     const stat = await fs.stat(snapshotPath);
-    if (!stat.isDirectory()) throw new Error(`${fixtureId}: ${snapshot} is not a directory.`);
+    if (!stat.isDirectory())
+      throw new Error(`${fixtureId}: ${snapshot} is not a directory.`);
   }
 
   const coverage = fixture.expected.coverage;
-  const bucketTotal = coverage.analyzed
-    + coverage.partiallyAnalyzed
-    + coverage.unsupported
-    + coverage.intentionallyExcluded;
+  const bucketTotal =
+    coverage.analyzed +
+    coverage.partiallyAnalyzed +
+    coverage.unsupported +
+    coverage.intentionallyExcluded;
   if (bucketTotal !== coverage.totalChangedFiles) {
-    throw new Error(`${fixtureId}: coverage buckets ${bucketTotal} do not equal total ${coverage.totalChangedFiles}.`);
+    throw new Error(
+      `${fixtureId}: coverage buckets ${bucketTotal} do not equal total ${coverage.totalChangedFiles}.`,
+    );
   }
 }
 
 const invalidMvpTags = [...mvpTagCounts].filter(([, count]) => count !== 1);
 if (invalidMvpTags.length > 0) {
-  throw new Error(`Each MVP case tag mvp-01 through mvp-20 must occur exactly once: ${JSON.stringify(invalidMvpTags)}`);
+  throw new Error(
+    `Each MVP case tag mvp-01 through mvp-20 must occur exactly once: ${JSON.stringify(invalidMvpTags)}`,
+  );
 }
 
 const adrDirectory = path.join(root, "docs", "architecture-decisions");
-const phaseZeroAdrs = (await fs.readdir(adrDirectory)).filter((name) => /^000\d-.*\.md$/u.test(name));
+const phaseZeroAdrs = (await fs.readdir(adrDirectory)).filter((name) =>
+  /^000\d-.*\.md$/u.test(name),
+);
 if (phaseZeroAdrs.length < 6) {
-  throw new Error(`Expected at least 6 Phase 0 ADRs, found ${phaseZeroAdrs.length}.`);
+  throw new Error(
+    `Expected at least 6 Phase 0 ADRs, found ${phaseZeroAdrs.length}.`,
+  );
 }
 
 process.stdout.write(
-  `Validated ${Object.keys(schemas).length} Draft 2020-12 schemas, `
-  + `${fixtureIds.length} ChangeBench cases (all 20 MVP behaviors), ${requiredSpecifications.length} normative specs, `
-  + `and ${phaseZeroAdrs.length} Phase 0 ADRs.\n`
+  `Validated ${Object.keys(schemas).length} Draft 2020-12 schemas, ` +
+    `${fixtureIds.length} ChangeBench cases (all 20 MVP behaviors), ${requiredSpecifications.length} normative specs, ` +
+    `and ${phaseZeroAdrs.length} Phase 0 ADRs.\n`,
 );

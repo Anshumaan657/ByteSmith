@@ -129,6 +129,12 @@ export const executeAnalysisBenchmarkCase: ChangeBenchExecutor = async (
   );
   try {
     await git(repository, ["init", "--quiet"]);
+    await git(repository, [
+      "remote",
+      "add",
+      "origin",
+      "https://github.com/bytesmith/changebench-fixture.git",
+    ]);
     await copyContents(context.beforeDirectory, repository);
     await ensureFixtureScaffolding(repository);
     const base = await commitSnapshot(repository, "before");

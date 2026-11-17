@@ -1,0 +1,44 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bytesmith.dev/schemas/usability-evaluations.schema.json",
+  "title": "ByteSmith independent usability evaluations",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "evaluations"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "evaluations": {
+      "type": "array",
+      "minItems": 5,
+      "items": { "$ref": "#/$defs/evaluation" }
+    }
+  },
+  "$defs": {
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "evaluator", "withoutAssistance", "usefulFinding", "observations"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "status": { "enum": ["pending", "completed"] },
+        "evaluator": { "type": "string", "minLength": 1 },
+        "withoutAssistance": { "type": ["boolean", "null"] },
+        "usefulFinding": { "type": ["string", "null"] },
+        "observations": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "const": "completed" } }, "required": ["status"] },
+          "then": {
+            "properties": {
+              "evaluator": { "not": { "const": "UNASSIGNED" } },
+              "withoutAssistance": { "const": true },
+              "usefulFinding": { "type": "string", "minLength": 1 },
+              "observations": { "type": "array", "minItems": 1 }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

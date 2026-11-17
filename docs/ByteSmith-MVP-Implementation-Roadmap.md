@@ -611,8 +611,9 @@ understandable, and fast enough to validate the product hypothesis.
    determinism, incomplete outcomes, and crashes with bounded one-worker runs.
 4. **Phase 9D — Distribution and operations.** Complete installation,
    troubleshooting, supported-pattern, limitation, and release procedures.
-5. **Phase 9E — Release-candidate audit.** Produce the final machine-readable
-   gate report and Verify 0.1 release notes without inventing human evidence.
+5. **Phase 9E — Release-candidate audit (implemented; release gate pending).**
+   Produce the final machine-readable gate report and Verify 0.1 release notes
+   without inventing human evidence.
 
 ## Repository portfolio
 

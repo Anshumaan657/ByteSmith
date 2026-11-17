@@ -1,0 +1,74 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bytesmith.dev/schemas/release-audit.schema.json",
+  "title": "ByteSmith Verify release-candidate audit",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "release", "automated", "externalEvidence", "conclusion"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "release": {
+      "type": "object", "additionalProperties": false,
+      "required": ["product", "version", "revision"],
+      "properties": {
+        "product": { "const": "ByteSmith Verify" },
+        "version": { "const": "0.1.0" },
+        "revision": { "type": "string", "pattern": "^[0-9a-f]{40}$" }
+      }
+    },
+    "automated": {
+      "type": "object", "additionalProperties": false,
+      "required": ["passed", "gates", "metrics"],
+      "properties": {
+        "passed": { "type": "boolean" },
+        "gates": { "type": "object", "additionalProperties": { "type": "boolean" } },
+        "metrics": {
+          "type": "object", "additionalProperties": false,
+          "required": ["contractPrecision", "directConsumerPrecision", "testSelectionRecall", "determinismRate", "crashRate", "peakMemoryBytes"],
+          "properties": {
+            "contractPrecision": { "type": "number" },
+            "directConsumerPrecision": { "type": "number" },
+            "testSelectionRecall": { "type": "number" },
+            "determinismRate": { "type": "number" },
+            "crashRate": { "type": "number" },
+            "peakMemoryBytes": { "type": "number" }
+          }
+        }
+      }
+    },
+    "externalEvidence": {
+      "type": "object", "additionalProperties": false,
+      "required": ["repositoryPortfolio", "usability"],
+      "properties": {
+        "repositoryPortfolio": {
+          "type": "object", "additionalProperties": false,
+          "required": ["completed", "total", "missingProfiles"],
+          "properties": {
+            "completed": { "type": "integer", "minimum": 0 },
+            "total": { "const": 5 },
+            "missingProfiles": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "usability": {
+          "type": "object", "additionalProperties": false,
+          "required": ["completed", "total", "required"],
+          "properties": {
+            "completed": { "type": "integer", "minimum": 0 },
+            "total": { "type": "integer", "minimum": 5 },
+            "required": { "const": 5 }
+          }
+        }
+      }
+    },
+    "conclusion": {
+      "type": "object", "additionalProperties": false,
+      "required": ["releaseReady", "code", "summary"],
+      "properties": {
+        "releaseReady": { "type": "boolean" },
+        "code": { "enum": ["ready", "automated_gates_failed", "external_evidence_pending"] },
+        "summary": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

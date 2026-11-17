@@ -11,6 +11,8 @@ export async function loadSchemas(root) {
     "changebench-case.schema.json",
     "bytesmith.config.schema.json",
     "validation-portfolio.schema.json",
+    "usability-evaluations.schema.json",
+    "release-audit.schema.json",
   ];
   const schemas = {};
   for (const name of names) {
@@ -40,13 +42,19 @@ export async function createSchemaValidators(root) {
     validationPortfolio: ajv.getSchema(
       schemas["validation-portfolio.schema.json"].$id,
     ),
+    usabilityEvaluations: ajv.getSchema(
+      schemas["usability-evaluations.schema.json"].$id,
+    ),
+    releaseAudit: ajv.getSchema(schemas["release-audit.schema.json"].$id),
   };
 
   if (
     !validators.manifest ||
     !validators.changebenchCase ||
     !validators.config ||
-    !validators.validationPortfolio
+    !validators.validationPortfolio ||
+    !validators.usabilityEvaluations ||
+    !validators.releaseAudit
   ) {
     throw new Error("Required schema validator was not compiled.");
   }

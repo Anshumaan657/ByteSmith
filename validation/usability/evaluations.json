@@ -1,0 +1,45 @@
+{
+  "schemaVersion": "1.0.0",
+  "evaluations": [
+    {
+      "id": "developer-01",
+      "status": "pending",
+      "evaluator": "UNASSIGNED",
+      "withoutAssistance": null,
+      "usefulFinding": null,
+      "observations": []
+    },
+    {
+      "id": "developer-02",
+      "status": "pending",
+      "evaluator": "UNASSIGNED",
+      "withoutAssistance": null,
+      "usefulFinding": null,
+      "observations": []
+    },
+    {
+      "id": "developer-03",
+      "status": "pending",
+      "evaluator": "UNASSIGNED",
+      "withoutAssistance": null,
+      "usefulFinding": null,
+      "observations": []
+    },
+    {
+      "id": "developer-04",
+      "status": "pending",
+      "evaluator": "UNASSIGNED",
+      "withoutAssistance": null,
+      "usefulFinding": null,
+      "observations": []
+    },
+    {
+      "id": "developer-05",
+      "status": "pending",
+      "evaluator": "UNASSIGNED",
+      "withoutAssistance": null,
+      "usefulFinding": null,
+      "observations": []
+    }
+  ]
+}
